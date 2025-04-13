@@ -10,6 +10,7 @@ tests:
     - test.xml
 
 nlp:
+  modifyRequestInPreMatch: true
   intentNoMatchThresholds:
     phrases: 0.2
     patterns: 0.2

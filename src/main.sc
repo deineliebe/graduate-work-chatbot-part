@@ -49,7 +49,7 @@ theme: /
             a: Введите электронный адрес:
 
             state: ConfirmEmail
-                q: * duckling.email::email * || fromState = "/Settings"
+                q: * @duckling.email * || fromState = "/Settings"
                 script:
                     $client.email = $parseTree.value;
                 a: Спасибо! ваш e-mail ({{$client.email}}) изменён

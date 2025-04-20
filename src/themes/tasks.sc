@@ -45,7 +45,7 @@ theme: /Tasks
             go!: /Tasks/CreateTask/GetName
 
         state: ClarifyTask
-            if: $session.newTask.description:
+            if: $session.newTask.description
                 a: Вы уже заполняли заявку:
 
                     Название: {{$session.newTask.name}}

@@ -18,5 +18,5 @@ require: patterns/patterns.sc
 
 require: scripts/functions.js
 
-require: themes/globalStates.js
-require: themes/tasks.js
+require: themes/globalStates.sc
+require: themes/tasks.sc

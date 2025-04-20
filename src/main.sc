@@ -43,6 +43,7 @@ theme: /
         a: Выберите, что вы хотите сделать
         buttons:
             "Поменять электронный адрес" -> /Settings/ChangeEmail
+            "Вернуться в меню" -> /HowCanIHelpYou
         q: * duckling.email * || toState = "/Settings/ChangeEmail/ConfirmEmail"
 
         state: ChangeEmail
@@ -58,12 +59,15 @@ theme: /
             state: CatchAll
                 event: noMatch
                 a: К сожалению, не смогла распознать электронный адрес. 
+                buttons:
+                    "Вернуться в меню" -> /HowCanIHelpYou
 
         state: CatchAll
             event: noMatch
             a: К сожалению, не смогла понять, что вы хотите сделать. Уточните ваш запрос
         buttons:
             "Поменять электронный адрес" -> /Settings/ChangeEmail
+            "Вернуться в меню" -> /HowCanIHelpYou
 
     state: GlobalCatchAll
         event!: noMatch

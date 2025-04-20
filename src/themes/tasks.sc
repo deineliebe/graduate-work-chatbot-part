@@ -20,6 +20,7 @@ theme: /Tasks
                 go!: /Tasks/CreateTask/GetDescription
             buttons:
                 "Нет описания" -> /Tasks/CreateTask/GetDescription
+            q: * || toState="/Tasks/CreateTask/GetDescription"
 
         state: GetDescription
             script: $session.newTask.description = $request.query;

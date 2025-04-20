@@ -77,20 +77,15 @@ theme: /Tasks
         state: Search
             script:
                 if ($session.buttonsPaginationMessage) deleteMessage($session.buttonsPaginationMessage);
-                $session.buttonsPaginationMessage = sendMessage("Выберите задачу", pagination($session.buttons, $session.paginatorCurPos, 5));
+                $session.buttonsPaginationMessage = sendMessage("Выберите задачу: введите её id или нажмите на соответствующую кнопку", pagination($session.buttons, $session.paginatorCurPos, 5));
             
             state: GetNumber
                 q: * @duckling.number *
                 script:
-                    $temp.number = parseInt($parseTree.words[0]);
-                if: $temp.number < 1  $temp.number > $Features.length
-                    a: Недопустимый индекс. Выберите число от 1 до {{ $Features.length }}
-                    go!: /AllSolutions
-                else:
+                    $session.taskId = $parseTree.value;
                     script:
                         deleteMessage($session.buttonsPaginationMessage);
                         delete $session.buttonsPaginationMessage;
-                        $client.index = $temp.number - 1;
                         $reactions.transition("/Tasks/GetTasks/Search");
             
             state: MoreBack

@@ -33,7 +33,7 @@ theme: /Tasks
         state: GetDeadline
             a: Отлично! Приступаю к созданию задачи
             script:
-                if ($parseTree.date?.value) $session.newTask.deadline = $parseTree.date.value;
+                if ($parseTree.date && $parseTree.date.value) $session.newTask.deadline = $parseTree.date.value;
                 $session.newTask.status = "TO DO";
                 $session.newTask.createdAt = moment();
                 $client.tasks.push($session.newTask);
@@ -52,16 +52,15 @@ theme: /Tasks
                     Описание: {{$session.newTask.description}}
 
                     Хотите продолжить заполнение?
-                buttons:
             else:
                 a: Вы уже заполняли заявку:
 
                     Название: {{$session.newTask.name}}
 
                     Хотите продолжить заполнение?
-                buttons:
-                    "Да" -> /Tasks/CreateTask/GetName
-                    "Нет" -> /Tasks/CreateTask/ResetTask
+            buttons:
+                "Да" -> /Tasks/CreateTask/GetName
+                "Нет" -> /Tasks/CreateTask/ResetTask
 
     state: GetTasks
         script:
@@ -125,8 +124,8 @@ theme: /Tasks
             "Дедлайн"
             "Статус"
 
-            state: UpdateField
-                a: Поле обновлено
+        state: UpdateField
+            a: Поле обновлено
 
     state: DeleteTask
         a: Вы точно хотите удалить задачу?

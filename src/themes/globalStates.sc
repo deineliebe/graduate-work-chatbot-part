@@ -1,7 +1,7 @@
 theme: /GlobalStates
 
     state: Hello
-        q!: ($hello/$extraHello)
+        q!: ($hello/$helloExtra)
         random:
             a: Привет! Рада видеть тебя!
             a: Привет-привет!
@@ -62,7 +62,6 @@ theme: /GlobalStates
 
     state: Clarity
         q!: {[позови*/напиши*/переведи* на/свяжи* с] [$oneWord] [~живой] ($serviceHelperHuman/$operator)}
-        q!: * {$transfer [$oneWord] $operator} *
         q!: * {((выйти на/включить/переключ* на) [диалог]/*говор*/общат*/разговарив*/работ*/общал*/$need [[$oneWord] ~помощь]/~соединить/переведи*/перевести/~связать) [$oneWord] ($operator)} *
         a: К сожалению, с вами могу поговорить только я. Я могу вам чем-то помочь?
 

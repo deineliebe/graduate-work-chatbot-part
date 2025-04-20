@@ -47,9 +47,9 @@ theme: /
 
         state: ChangeEmail
             a: Введите электронный адрес:
-            q: * duckling.email * || toState = "/Settings/ChangeEmail/ConfirmEmail"
 
             state: ConfirmEmail
+                q: * duckling.email::email * || fromState = "/Settings"
                 script:
                     $client.email = $parseTree.value;
                 a: Спасибо! ваш e-mail ({{$client.email}}) изменён
@@ -58,6 +58,12 @@ theme: /
             state: CatchAll
                 event: noMatch
                 a: К сожалению, не смогла распознать электронный адрес. 
+
+        state: CatchAll
+            event: noMatch
+            a: К сожалению, не смогла понять, что вы хотите сделать. Уточните ваш запрос
+        buttons:
+            "Поменять электронный адрес" -> /Settings/ChangeEmail
 
     state: GlobalCatchAll
         event!: noMatch

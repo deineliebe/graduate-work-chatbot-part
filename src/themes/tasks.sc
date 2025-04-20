@@ -1,20 +1,20 @@
 theme: /Tasks
     
     state: CreateTask
-        if: _.isEmpty($session.task)
-            script: $session.task = {};
+        if: _.isEmpty($session.newTask)
+            script: $session.newTask = {};
             a: Напишите название задачи
         else:
             go!: /Tasks/CreateTask/ClarifyTask
         q: * || toState="/Tasks/CreateTask/GetName"
 
         state: ResetTask
-            script: $session.task = {};
+            script: $session.newTask = {};
             go!: /Tasks/CreateTask/GetName
 
         state: GetName
-            if: _.isEmpty($session.task.description)
-                script: $session.task.name = $session.task.name || $request.query;
+            if: _.isEmpty($session.newTask.description)
+                script: $session.newTask.name = $session.newTask.name || $request.query;
                 a: Напишите описание для задачи
             else:
                 go!: /Tasks/CreateTask/GetDescription
@@ -22,7 +22,7 @@ theme: /Tasks
                 "Нет описания" -> /Tasks/CreateTask/GetDescription
 
         state: GetDescription
-            script: $session.task.description = $request.query;
+            script: $session.newTask.description = $request.query;
             a: Укажите дедлайн выполнения задачи
             buttons:
                 "Нет дедлайна" -> /Tasks/CreateTask/GetDeadline
@@ -33,10 +33,10 @@ theme: /Tasks
         state: GetDeadline
             a: Отлично! Приступаю к созданию задачи
             script:
-                if ($parseTree.date?.value) $session.task.deadline = $parseTree.date.value;
-                $session.task.status = "TO DO";
-                $session.task.createdAt = moment();
-                $client.tasks.push($session.task);
+                if ($parseTree.date?.value) $session.newTask.deadline = $parseTree.date.value;
+                $session.newTask.status = "TO DO";
+                $session.newTask.createdAt = moment();
+                $client.tasks.push($session.newTask);
             a: Задача создана
             go!: /HowCanIHelpYou
 
@@ -45,29 +45,28 @@ theme: /Tasks
             go!: /Tasks/CreateTask/GetName
 
         state: ClarifyTask
-            if: $session.task.description:
+            if: $session.newTask.description:
                 a: Вы уже заполняли заявку:
 
-                    Название: {{$session.task.name}}
-                    Описание: {{$session.task.description}}
+                    Название: {{$session.newTask.name}}
+                    Описание: {{$session.newTask.description}}
 
                     Хотите продолжить заполнение?
                 buttons:
             else:
                 a: Вы уже заполняли заявку:
 
-                    Название: {{$session.task.name}}
+                    Название: {{$session.newTask.name}}
 
                     Хотите продолжить заполнение?
                 buttons:
                     "Да" -> /Tasks/CreateTask/GetName
                     "Нет" -> /Tasks/CreateTask/ResetTask
-    
+
     state: GetTasks
         script:
-            delete $session.buttonsPaginationMessage;
             $session.paginatorCurPos = 0;
-        if: _.isEmpty($temp.tasks)
+        if: _.isEmpty($client.tasks)
             go!: /NoTasks
         else:
             a: В каком виде вы хотите посмотреть задачи?
@@ -76,47 +75,47 @@ theme: /Tasks
                 "Сначала горящие" -> /Tasks/GetTasks/Search
                 "С определённым статусом" -> /Tasks/GetTasks/Search
 
-            state: Search
+        state: Search
+            script:
+                if ($session.buttonsPaginationMessage) deleteMessage($session.buttonsPaginationMessage);
+                $session.buttonsPaginationMessage = sendMessage("Выберите задачу", pagination($session.buttons, $session.paginatorCurPos, 5));
+            
+            state: GetNumber
+                q: * @duckling.number *
                 script:
-                    if ($session.buttonsPaginationMessage) deleteMessage($session.buttonsPaginationMessage);
-                    $session.buttonsPaginationMessage = sendMessage("Выберите задачу", pagination($session.buttons, $session.paginatorCurPos, 5));
-                
-                state: GetNumber
-                    q: * @duckling.number *
+                    $temp.number = parseInt($parseTree.words[0]);
+                if: $temp.number < 1  $temp.number > $Features.length
+                    a: Недопустимый индекс. Выберите число от 1 до {{ $Features.length }}
+                    go!: /AllSolutions
+                else:
                     script:
-                        $temp.number = parseInt($parseTree.words[0]);
-                    if: $temp.number < 1  $temp.number > $Features.length
-                        a: Недопустимый индекс. Выберите число от 1 до {{ $Features.length }}
-                        go!: /AllSolutions
-                    else:
-                        script:
-                            deleteMessage($session.buttonsPaginationMessage);
-                            delete $session.buttonsPaginationMessage;
-                            $client.index = $temp.number - 1;
-                            $reactions.transition("/Tasks/GetTasks/Search");
-                
-                state: MoreBack
-                    q: * (=>:more) *
-                    q: * ($regex<\<\=>:back) *
-                    q: * (вперед:more/назад:back) *
-                    script:
-                        var mod = $parseTree.value === "more" ? 3 : -3;
-                        $session.paginatorCurPos += mod;
+                        deleteMessage($session.buttonsPaginationMessage);
+                        delete $session.buttonsPaginationMessage;
+                        $client.index = $temp.number - 1;
                         $reactions.transition("/Tasks/GetTasks/Search");
+            
+            state: MoreBack
+                q: * (вперед:more) *
+                q: * (назад:back) *
+                q: * (вперед:more/назад:back) *
+                script:
+                    var mod = $parseTree.value === "more" ? 3 : -3;
+                    $session.paginatorCurPos += mod;
+                    $reactions.transition("/Tasks/GetTasks/Search");
 
-            state: ShowTask
-                a: Данные задачи:
-                script: $session.task = null;
-                buttons:
-                    "Обновить" -> /Tasks/UpdateTask
-                    "Удалить" -> /Tasks/DeleteTask
-                    "Вернуться к списку" -> /Tasks/GetTasks/Search
+        state: ShowTask
+            a: Данные задачи:
+            script: $session.task = null;
+            buttons:
+                "Обновить" -> /Tasks/UpdateTask
+                "Удалить" -> /Tasks/DeleteTask
+                "Вернуться к списку" -> /Tasks/GetTasks/Search
 
-            state: NoTasks
-                a: На текущий момент у вас нет задач. Хотите создать?
-                buttons:
-                    "Да, создать задачу" -> /Tasks/CreateTask
-                    "Нет, вернуться в меню" -> /HowCanIHelpYou
+        state: NoTasks
+            a: На текущий момент у вас нет задач. Хотите создать?
+            buttons:
+                "Да, создать задачу" -> /Tasks/CreateTask
+                "Нет, вернуться в меню" -> /HowCanIHelpYou
 
     state: UpdateTask
         a: Что именно вы хотите изменить?

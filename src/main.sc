@@ -42,7 +42,7 @@ theme: /
         q!: (~настроить)
         a: Выберите, что вы хотите сделать
         buttons:
-            "Поменять электронный адрес" -> /ChangeEmail
+            "Поменять электронный адрес" -> /Settings/ChangeEmail
         q: * duckling.email * || toState = "/Settings/ChangeEmail/ConfirmEmail"
 
         state: ChangeEmail

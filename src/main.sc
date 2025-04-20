@@ -43,16 +43,16 @@ theme: /
         a: Выберите, что вы хотите сделать
         buttons:
             "Поменять электронный адрес" -> /ChangeEmail
-        q: * duckling.email::email * || toState="/Settings/ChangeEmail/ConfirmEmail"
+        q: * duckling.email * || toState = "/Settings/ChangeEmail/ConfirmEmail"
 
         state: ChangeEmail
             a: Введите электронный адрес:
-            q: * duckling.email::email * || toState="/Settings/ChangeEmail/ConfirmEmail"
+            q: * duckling.email * || toState = "/Settings/ChangeEmail/ConfirmEmail"
 
             state: ConfirmEmail
                 script:
-                    $client.email = $parseTree.email;
-                a: Спасибо! ваш e-mail ({{$parseTree.email}}) изменён
+                    $client.email = $parseTree.value;
+                a: Спасибо! ваш e-mail ({{$client.email}}) изменён
                 go!: /HowCanIHelpYou
 
             state: CatchAll

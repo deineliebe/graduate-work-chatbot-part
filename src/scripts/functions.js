@@ -41,3 +41,59 @@ function getClientUsername() {
     if ($.request.channelType === "chatapi") return $.request.rawRequest.clientId;
     return "test";
 }
+
+function pagination(elements, position, numOfButtons) {
+    var i;
+    var buttons = [];
+
+    if (position > elements.length) {
+        position = position - numOfButtons;
+    } else if (position < 0) {
+        position = 0;
+    }
+
+    if (position > 0) {
+        buttons.push({text: "Назад"});
+        $.session.paginatorCurPos -= 1;
+    }
+    for (i = position; i < (position + numOfButtons - (position > 0)
+        - (position + 2 < elements.length)); i++) {
+        buttons.push(elements[i]);
+    }
+    if (i < elements.length) {
+        buttons.push({text: "Вперёд"});
+        $.session.paginatorCurPos -= 1;
+    }
+    return buttons;
+}
+
+function sendMessage(text, _buttons, _removeKeyboard) {
+    var body = {
+        "chat_id": $.client.chatId,
+        "text": text,
+        "parse_mode": parseMode,
+        "reply_markup": {}
+    };
+    if (_buttons) body.reply_markup.inline_keyboard = [_buttons];
+    if (_removeKeyboard) body.reply_markup.remove_keyboard = true;
+    var result = $http.post($.injector.baseTelegramUrl + $.client.telegramToken + "/sendMessage", {
+        body: body
+    });
+    return result && result.data && result.data.result && result.data.result.message_id;
+}
+
+function deleteMessage(message_id) {
+    if (!isTelegramChannel()) return;
+    $.response.replies = $.response.replies || [];
+    $.response.replies.push({
+        type: "raw",
+        body: {
+            "message_id": message_id
+        },
+        method: "deleteMessage"
+    });
+}
+
+function isTelegramChannel() {
+    return !testMode() && $.request.channelType === "telegram";
+}

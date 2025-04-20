@@ -18,81 +18,48 @@ theme: /
 
     state: Start
         q!: $regex</start>
-        if: $session.isAuthorized
-            Привет! Рада видеть тебя, {{$session.username}}!
-        else: 
-            a: Привет!
-
-                Я - бот помощник для планирования задач.
-
-    state: HowCanIHelpYou
-        a: Что ты хочешь сделать сегодня?
-        buttons:
-            "Создать задачу" -> /CreateTask
-            "Ближайшие дедлайны" -> /TheClosestTasks
-            "Список задач" -> /GetTasks
-    
-    state: CreateTask
-        a: Напишите название задачи
-        q: * || toState="/CreateTask/GetName"
-
-        state: GetName
-            script:
-                $session.taskName = $request.query
-            a: Укажите дедлайн выполнения задачи
-            buttons:
-                "Нет дедлайна" -> /CreateTask/NoDeadLine
-            q: * || toState="/CreateTask/GetWrongDeadline"
-            q: * (нет/без/~бессрочный/~не ~важен) * || toState="/CreateTask/GetWrongDeadline"
-            q: * @duckling.date::date * || toState="/CreateTask/GetDeadline"
-
-        state: GetDeadline
-            a: Отлично! Приступаю к созданию задачи
-            a: Задача создана
-            go!: /HowCanIHelpYou
-
-        state: GetWrongDeadline
-            a: К сожалению, не удалось распознать дату в вашем ответе. Попробуйте ещё раз
-            go!: /CreateTask/GetName
-    
-    state: GetTasks
-        script:
-            $temp.tasks = [];
-        if: !_.isEmpty($temp.tasks)
-            a: Вот список ваших задач:
-
-                {{$temp.tasks}}
-            go!: /HowCanIHelpYou
+        script: $client.telegramToken = "bot" + $env.get("TELEGRAM_TOKEN", "");
+        if: $client.isAuthorized
+            a: Привет! Рада видеть тебя, {{$client.username}}!
         else:
-            a: На текущий момент у вас нет задач. Хотите создать?
-        buttons:
-            "Да, создать задачу" -> /CreateTask
-            "Нет, вернуться в меню" -> /HowCanIHelpYou
-
-    state: TheClosestTasks
-        script:
-            $temp.tasks = [];
-        if: !_.isEmpty($temp.tasks)
-            a: Вот список ваших задач:
-
-                {{$temp.tasks}}
-            go!: /HowCanIHelpYou
-        else:
-            a: На текущий момент у вас нет задач. Хотите создать?
-        buttons:
-            "Да, создать задачу" -> /CreateTask
-            "Нет, вернуться в меню" -> /HowCanIHelpYou
-
-    state: Hello
-        intent!: /привет
-        a: Привет! Рада видеть тебя!
+            scriptEs6:
+                if (testMode()) $.client.id = 0;
+                else $.client.id = 0;
+                $.client.tasks = [];
+            a: Привет! Я - бот помощник для планирования задач
         go!: /HowCanIHelpYou
 
-    state: Bye
-        intent!: /пока
-        a: Пока! Хорошего дня тебя, буду рада увидеть тебя снова.
+    state: HowCanIHelpYou
+        q!: {* (меню*/~навигация/список (~вариант/~опция)/~выбор)}
+        a: Чем я могу тебе помочь?
+        buttons:
+            "Создай задачу" -> /Tasks/CreateTask
+            "Покажи задачи" -> /Tasks/GetTasks
+            "Настройки" -> /Settings
 
-    state: NoMatch
+    state: Settings
+        q!: [~показать/~поменять] (~настройки/~параметр/конфиг*)
+        q!: (~настроить)
+        a: Выберите, что вы хотите сделать
+        buttons:
+            "Поменять электронный адрес" -> /ChangeEmail
+        q: * duckling.email::email * || toState="/Settings/ChangeEmail/ConfirmEmail"
+
+        state: ChangeEmail
+            a: Введите электронный адрес:
+            q: * duckling.email::email * || toState="/Settings/ChangeEmail/ConfirmEmail"
+
+            state: ConfirmEmail
+                script:
+                    $client.email = $parseTree.email;
+                a: Спасибо! ваш e-mail ({{$parseTree.email}}) изменён
+                go!: /HowCanIHelpYou
+
+            state: CatchAll
+                event: noMatch
+                a: К сожалению, не смогла распознать электронный адрес. 
+
+    state: GlobalCatchAll
         event!: noMatch
         a: К сожалению, не смогла понять ваш запрос. Подскажите, что именно вас интересует?
         go!: /HowCanIHelpYou

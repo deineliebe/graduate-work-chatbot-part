@@ -27,7 +27,9 @@ const users = {
         initSQL();
         return sql`CREATE TABLE IF NOT EXISTS users(
             username VARCHAR(50) PRIMARY KEY,
-            channel_user_id VARCHAR(100)
+            channel_user_id VARCHAR(100),
+            email VARCHAR(100),
+            password VARCHAR(100),
         );`;
     },
     async addUser(username, channelUserId) {
@@ -54,19 +56,25 @@ const tasks = {
         return sql`CREATE TABLE IF NOT EXISTS tasks(
             name VARCHAR(150),
             deadline VARCHAR(100),
-            username VARCHAR(50)б
+            username VARCHAR(50),
+            status VARCHAR(50),
             CONSTRAINT task_id PRIMARY KEY (name, username)
         );`;
     },
-    async addTask(name, deadline, username) {
+    async addTask(name, deadline, username, status) {
         await users.createTable();
-        return sql`INSERT INTO tasks(name, deadline, username)
-            VALUES (${name}, ${deadline}, ${username})
+        return sql`INSERT INTO tasks(name, deadline, username, status)
+            VALUES (${name}, ${deadline}, ${username}, ${status})
             ON CONFLICT (username) DO NOTHING;`;
     },
     async getTasks() {
         await users.createTable();
         return sql`SELECT * FROM tasks;`;
+    },
+    async getTasksWithSpecificStatus(status) {
+        await users.createTable();
+        return sql`SELECT * FROM tasks
+            WHERE status=${status};`;
     },
     async getTask(name, username) {
         await users.createTable();

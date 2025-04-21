@@ -20,3 +20,4 @@ require: scripts/functions.js
 
 require: themes/globalStates.sc
 require: themes/tasks.sc
+require: themes/test.sc

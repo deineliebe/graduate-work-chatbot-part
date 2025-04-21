@@ -12,7 +12,7 @@ theme: /Tasks
             go: /Tasks/CreateTask
 
         state: GetName
-            if: _.isEmpty($session.newTask.description)
+            if: !$session.newTask || _.isEmpty($session.newTask.description)
                 script:
                     $session.newTask = $session.newTask || {};
                     $session.newTask.name = $session.newTask.name || $request.query;

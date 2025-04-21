@@ -109,9 +109,9 @@ theme: /Tasks
             script:
                 $temp.body = "Название: " + $session.task.name + "\n";
                 $temp.body += $session.task.description ? "Описание: " + $session.task.description + "\n" : "";
-                $temp.body += $session.task.deadline ? "Дедлайн: " + moment($session.task.deadline).add(3, "h").format("Do MMMM h:mm") + "\n" : "";
+                $temp.body += $session.task.deadline ? "Дедлайн: " + moment($session.task.deadline).locale("ru").format("Do MMMM h:mm") + "\n" : "";
                 $temp.body += "Статус: " + $session.task.status + "\n";
-                $temp.body += "\n(Создано: " + moment($session.task.createdAt).format("Do MMMM h:mm") + ")";
+                $temp.body += "\n(Создано: " + moment($session.task.createdAt).locale("ru").format("Do MMMM h:mm") + ")";
             a: {{$temp.body}}
             buttons:
                 "Обновить" -> /Tasks/UpdateTask
@@ -197,7 +197,7 @@ theme: /Tasks
                     return $session.task.id != task.id;
                 });
             a: Хорошо! Задача {{$session.task.id}} удалена
-            go!: /Tasks/GetTasks/Search
+            go!: /Tasks/GetTasks
 
         state: Cancel
             q: отмена

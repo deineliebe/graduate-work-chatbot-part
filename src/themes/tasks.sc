@@ -35,12 +35,14 @@ theme: /Tasks
         state: GetDeadline
             a: Отлично! Приступаю к созданию задачи
             script:
-                if ($parseTree.date && $parseTree.date.value) $session.newTask.deadline = $parseTree.date.value;
+                if ($parseTree._date) $session.newTask.deadline = $parseTree._date;
                 $session.newTask.status = "TO DO";
                 $session.newTask.createdAt = moment();
                 $session.newTask.id = $client.tasks.length;
+                log("!!! " + toPrettyString($parseTree));
+                log("!!! " + toPrettyString($session.newTask));
                 $client.tasks.push($session.newTask);
-            a: Задача создана, её ID: {{ $session.newTask.id}}
+            a: Задача создана, её ID: {{$session.newTask.id}}
             script: delete $session.newTask;
             go!: /HowCanIHelpYou
 
@@ -51,16 +53,12 @@ theme: /Tasks
         state: ClarifyTask
             if: $session.newTask.description
                 a: Вы уже заполняли заявку:
-
                     Название: {{$session.newTask.name}}
                     Описание: {{$session.newTask.description}}
-
                     Хотите продолжить заполнение?
             else:
                 a: Вы уже заполняли заявку:
-
                     Название: {{$session.newTask.name}}
-
                     Хотите продолжить заполнение?
             buttons:
                 "Да" -> /Tasks/CreateTask/GetName
@@ -91,12 +89,10 @@ theme: /Tasks
             state: GetNumber
                 q: * @duckling.number::number *
                 script:
-                    log("0 " + toPrettyString($parseTree));
                     delete $session.buttonsPaginationMessage;
                     $session.task = _.find($client.tasks, function(task) {
                         return task.id == $parseTree._number
                     });
-                    log("1 " + toPrettyString($session.task));
                 go!: /Tasks/GetTasks/ShowTask
             
             state: MoreBack
@@ -138,11 +134,53 @@ theme: /Tasks
             "Описание"
             "Дедлайн"
             "Статус"
-            "Вернуться к списку" -> /Tasks/GetTasks/Search
+            "Вернуться" -> /Tasks/GetTasks/ShowTask
 
-        state: UpdateField
-            q: * (@Name/@Description/@Deadline/@Status) *
-            a: Поле обновлено
+        state: UpdateName
+            q: * @Name *
+            a: Введите новое название задачи
+            
+            state: Confirm
+                q: *
+                script: $session.task.name = $request.query;
+                go!: /Tasks/GetTasks/ShowTask
+
+        state: UpdateDescription
+            q: * @Description *
+            a: Введите новое описание задачи
+            
+            state: Confirm
+                q: *
+                script: $session.task.description = $request.query;
+                go!: /Tasks/GetTasks/ShowTask
+
+        state: UpdateDeadline
+            q: * @Deadline *
+            a: Введите новый дедлайн
+            
+            state: Confirm
+                q: * @duckling.date::date *
+                script: $session.task.deadline = $parseTree._date;
+                go!: /Tasks/GetTasks/ShowTask
+
+            state: WrongDeadline
+                q: *
+                a: К сожалению, не удалось распознать дату в вашем ответе. Попробуйте ещё раз
+                go: /Tasks/UpdateTask/GetDeadline
+
+        state: UpdateStatus
+            q: * @Status *
+            script:
+                var buttons = [];
+                _.each($injector.statuses, function(status) {
+                    buttons.push({text: status});
+                });
+                $reactions.buttons(buttons);
+            
+            state: Confirm
+                q: *
+                script: $session.task.status = $request.query;
+                go!: /Tasks/GetTasks/ShowTask
 
     state: DeleteTask
         a: Вы точно хотите удалить задачу?
@@ -159,4 +197,4 @@ theme: /Tasks
         state: Cancel
             q: отмена
             a: Хорошо, возвращаю тебя к задаче
-            go!: /Tasks/GetTasks
+            go!: /Tasks/GetTasks/ShowTask

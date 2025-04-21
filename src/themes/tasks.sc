@@ -85,7 +85,7 @@ theme: /Tasks
                 if ($session.buttonsPaginationMessage) deleteMessage($session.buttonsPaginationMessage);
                 $session.buttonsPaginationMessage = sendMessage("Выберите задачу: введите её id или нажмите на соответствующую кнопку",
                     pagination(_.map($client.tasks, function(task) {
-                        return {text: task.name + " ( " + task.id + " )"};
+                        return {text: task.name + " (" + task.id + ")"};
                     }), $session.paginatorCurPos, 5));
             
             state: GetNumber
@@ -94,7 +94,7 @@ theme: /Tasks
                     log("0 " + toPrettyString($parseTree));
                     delete $session.buttonsPaginationMessage;
                     $session.task = _.find($client.tasks, function(task) {
-                        return task == $parseTree._number.value
+                        return task == $parseTree._number
                     });
                     log("1 " + toPrettyString($session.task));
                 go!: /Tasks/GetTasks/ShowTask

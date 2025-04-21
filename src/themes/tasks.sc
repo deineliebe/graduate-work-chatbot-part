@@ -76,56 +76,77 @@ theme: /Tasks
                 "Сначала новые"
                 "Сначала горящие"
                 "С определённым статусом"
+            q: * @New * || toState = "/Tasks/GetTasks/ChooseNewTaskSearch"
+            q: * @Hot * || toState = "/Tasks/GetTasks/ChooseHotTaskSearch"
+            q: * @Status * || toState = "/Tasks/GetTasks/ChooseStatusTaskSearch"
 
-        state: Search
-            q: * (@New/@Hot/@Status) *
-            script:
-                if ($session.buttonsPaginationMessage) deleteMessage($session.buttonsPaginationMessage);
-                $session.buttonsPaginationMessage = sendMessage("Выберите задачу: введите её id или нажмите на соответствующую кнопку",
-                    pagination(_.map($client.tasks, function(task) {
-                        return {text: task.name + " (" + task.id + ")"};
-                    }), $session.paginatorCurPos, 5));
-            
-            state: GetNumber
-                q: * @duckling.number::number *
-                script:
-                    delete $session.buttonsPaginationMessage;
-                    $session.task = _.find($client.tasks, function(task) {
-                        return task.id == $parseTree._number
-                    });
-                go!: /Tasks/GetTasks/ShowTask
-            
-            state: MoreBack
-                q: * (вперед:more) *
-                q: * (назад:back) *
-                q: * (вперед:more/назад:back) *
-                script:
-                    deleteMessage($session.buttonsPaginationMessage);
-                    var mod = $parseTree.value === "more" ? 3 : -3;
-                    $session.paginatorCurPos += mod;
-                    $reactions.transition("/Tasks/GetTasks/Search");
+        state: ChooseNewTaskSearch
+            go!: /Tasks/Search
 
-        state: ShowTask
+        state: ChooseHotTaskSearch
+            go!: /Tasks/Search
+
+        state: ChooseStatusTaskSearch
+            a: Выберите статус
             script:
-                $temp.body = "Название: " + $session.task.name + "\n";
-                $temp.body += $session.task.description ? "Описание: " + $session.task.description + "\n" : "";
-                $temp.body += $session.task.deadline ? "Дедлайн: " + moment($session.task.deadline).locale("ru").format("Do MMMM") + "\n" : "";
-                $temp.body += "Статус: " + $session.task.status + "\n";
-                $temp.body += "\n(Создано: " + moment($session.task.createdAt).locale("ru").format("Do MMMM h:mm") + ")";
-            a: {{$temp.body}}
-            buttons:
-                "Обновить" -> /Tasks/UpdateTask
-                "Удалить" -> /Tasks/DeleteTask
-                "Вернуться к списку" -> /Tasks/GetTasks/Search
-                "Вернуться в меню" -> /HowCanIHelpYou
-            q: * {(обновить) [@Task]} * || toState = "/Tasks/UpdateTask"
-            q: * {(удалить) [@Task]} * || toState = "/Tasks/DeleteTask"
+                var buttons = [];
+                _.each($injector.statuses, function(status) {
+                    buttons.push({text: status});
+                });
+                $reactions.buttons(buttons);
+            
+            state: Confirm
+                q: *
+                go!: /Tasks/Search
 
         state: NoTasks
             a: На текущий момент у вас нет задач. Хотите создать?
             buttons:
                 "Да, создать задачу" -> /Tasks/CreateTask
                 "Нет, вернуться в меню" -> /HowCanIHelpYou
+
+    state: Search
+        script:
+            if ($session.buttonsPaginationMessage) deleteMessage($session.buttonsPaginationMessage);
+            $session.buttonsPaginationMessage = sendMessage("Выберите задачу: введите её id или нажмите на соответствующую кнопку",
+                pagination(_.map($client.tasks, function(task) {
+                    return {text: task.name + " (" + task.id + ")"};
+                }), $session.paginatorCurPos, 5));
+        
+        state: GetNumber
+            q: * @duckling.number::number *
+            script:
+                delete $session.buttonsPaginationMessage;
+                $session.task = _.find($client.tasks, function(task) {
+                    return task.id == $parseTree._number
+                });
+            go!: /Tasks/ShowTask
+        
+        state: MoreBack
+            q: * (вперед:more) *
+            q: * (назад:back) *
+            q: * (вперед:more/назад:back) *
+            script:
+                deleteMessage($session.buttonsPaginationMessage);
+                var mod = $parseTree.value === "more" ? 3 : -3;
+                $session.paginatorCurPos += mod;
+                $reactions.transition("/Tasks/Search");
+
+    state: ShowTask
+        script:
+            $temp.body = "Название: " + $session.task.name + "\n";
+            $temp.body += $session.task.description ? "Описание: " + $session.task.description + "\n" : "";
+            $temp.body += $session.task.deadline ? "Дедлайн: " + moment($session.task.deadline).locale("ru").format("Do MMMM") + "\n" : "";
+            $temp.body += "Статус: " + $session.task.status + "\n";
+            $temp.body += "\n(Создано: " + moment($session.task.createdAt).locale("ru").format("Do MMMM h:mm") + ")";
+        a: {{$temp.body}}
+        buttons:
+            "Обновить" -> /Tasks/UpdateTask
+            "Удалить" -> /Tasks/DeleteTask
+            "Вернуться к списку" -> /Tasks/Search
+            "Вернуться в меню" -> /HowCanIHelpYou
+        q: * {(обновить) [@Task]} * || toState = "/Tasks/UpdateTask"
+        q: * {(удалить) [@Task]} * || toState = "/Tasks/DeleteTask"
 
     state: UpdateTask
         a: Что именно вы хотите изменить?
@@ -134,7 +155,7 @@ theme: /Tasks
             "Описание"
             "Дедлайн"
             "Статус"
-            "Вернуться" -> /Tasks/GetTasks/ShowTask
+            "Вернуться" -> /Tasks/ShowTask
 
         state: UpdateName
             q: * @Name *
@@ -143,7 +164,7 @@ theme: /Tasks
             state: Confirm
                 q: *
                 script: $session.task.name = $request.query;
-                go!: /Tasks/GetTasks/ShowTask
+                go!: /Tasks/ShowTask
 
         state: UpdateDescription
             q: * @Description *
@@ -152,7 +173,7 @@ theme: /Tasks
             state: Confirm
                 q: *
                 script: $session.task.description = $request.query;
-                go!: /Tasks/GetTasks/ShowTask
+                go!: /Tasks/ShowTask
 
         state: UpdateDeadline
             q: * @Deadline *
@@ -161,7 +182,7 @@ theme: /Tasks
             state: Confirm
                 q: * @duckling.date::date *
                 script: $session.task.deadline = moment($parseTree._date).add(3, "h").subtract(1, 'months');
-                go!: /Tasks/GetTasks/ShowTask
+                go!: /Tasks/ShowTask
 
             state: WrongDeadline
                 q: *
@@ -181,14 +202,14 @@ theme: /Tasks
             state: Confirm
                 q: *
                 script: $session.task.status = $request.query;
-                go!: /Tasks/GetTasks/ShowTask
+                go!: /Tasks/ShowTask
 
     state: DeleteTask
         a: Вы точно хотите удалить задачу?
         buttons:
             "Да" -> /Tasks/DeleteTask/Confirm
             "Нет" -> /Tasks/DeleteTask/Cancel
-            "Вернуться к списку" -> /Tasks/GetTasks/Search
+            "Вернуться к списку" -> /Tasks/Search
 
         state: Confirm
             q: подтверждаю
@@ -202,4 +223,4 @@ theme: /Tasks
         state: Cancel
             q: отмена
             a: Хорошо, возвращаю тебя к задаче
-            go!: /Tasks/GetTasks/ShowTask
+            go!: /Tasks/ShowTask

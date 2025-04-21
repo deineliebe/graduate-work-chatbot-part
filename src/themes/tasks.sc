@@ -76,9 +76,9 @@ theme: /Tasks
                 "Сначала новые"
                 "Сначала горящие"
                 "С определённым статусом"
-            q: * @New * || toState = "/Tasks/GetTasks/ChooseNewTaskSearch"
-            q: * @Hot * || toState = "/Tasks/GetTasks/ChooseHotTaskSearch"
-            q: * @Status * || toState = "/Tasks/GetTasks/ChooseStatusTaskSearch"
+        q: * @New * || toState = "/Tasks/GetTasks/ChooseNewTaskSearch"
+        q: * @Hot * || toState = "/Tasks/GetTasks/ChooseHotTaskSearch"
+        q: * @Status * || toState = "/Tasks/GetTasks/ChooseStatusTaskSearch"
 
         state: ChooseNewTaskSearch
             go!: /Tasks/Search

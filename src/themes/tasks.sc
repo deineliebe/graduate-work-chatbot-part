@@ -94,7 +94,7 @@ theme: /Tasks
                     log("0 " + toPrettyString($parseTree));
                     delete $session.buttonsPaginationMessage;
                     $session.task = _.find($client.tasks, function(task) {
-                        return task == $parseTree._number
+                        return task.id == $parseTree._number
                     });
                     log("1 " + toPrettyString($session.task));
                 go!: /Tasks/GetTasks/ShowTask

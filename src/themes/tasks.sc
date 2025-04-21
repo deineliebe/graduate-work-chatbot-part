@@ -37,8 +37,9 @@ theme: /Tasks
                 if ($parseTree.date && $parseTree.date.value) $session.newTask.deadline = $parseTree.date.value;
                 $session.newTask.status = "TO DO";
                 $session.newTask.createdAt = moment();
+                $session.newTask.id = $client.tasks.length;
                 $client.tasks.push($session.newTask);
-            a: Задача создана
+            a: Задача создана, её ID: {{ $session.newTask.id}}
             go!: /HowCanIHelpYou
 
         state: GetWrongDeadline
@@ -71,11 +72,12 @@ theme: /Tasks
         else:
             a: В каком виде вы хотите посмотреть задачи?
             buttons:
-                "Сначала новые" -> /Tasks/GetTasks/Search
-                "Сначала горящие" -> /Tasks/GetTasks/Search
-                "С определённым статусом" -> /Tasks/GetTasks/Search
+                "Сначала новые"
+                "Сначала горящие"
+                "С определённым статусом"
 
         state: Search
+            q: * (@New/@Hot/@Status) *
             script:
                 if ($session.buttonsPaginationMessage) deleteMessage($session.buttonsPaginationMessage);
                 $session.buttonsPaginationMessage = sendMessage("Выберите задачу: введите её id или нажмите на соответствующую кнопку", pagination($session.buttons, $session.paginatorCurPos, 5));
@@ -105,6 +107,9 @@ theme: /Tasks
                 "Обновить" -> /Tasks/UpdateTask
                 "Удалить" -> /Tasks/DeleteTask
                 "Вернуться к списку" -> /Tasks/GetTasks/Search
+                "Вернуться в меню" -> /HowCanIHelpYou
+            q: * {(обновить) [@Task]} * || toState = "/Tasks/UpdateTask"
+            q: * {(удалить) [@Task]} * || toState = "/Tasks/DeleteTask"
 
         state: NoTasks
             a: На текущий момент у вас нет задач. Хотите создать?
@@ -119,17 +124,25 @@ theme: /Tasks
             "Описание"
             "Дедлайн"
             "Статус"
+            "Вернуться к списку" -> /Tasks/GetTasks/Search
 
         state: UpdateField
+            q: * (@Name/@Description/@Deadline/@Status) *
             a: Поле обновлено
 
     state: DeleteTask
         a: Вы точно хотите удалить задачу?
+        buttons:
+            "Да" -> /Tasks/DeleteTask/Confirm
+            "Нет" -> /Tasks/DeleteTask/Cancel
+            "Вернуться к списку" -> /Tasks/GetTasks/Search
 
         state: Confirm
+            q: подтверждаю
             script: $client.tasks.remove($session.task.id);
             a: Хорошо! Задача {{$session.task.id}} удалена
 
         state: Cancel
+            q: отмена
             a: Хорошо, возвращаю тебя к задаче
-            go!: /GetTasks
+            go!: /Tasks/GetTasks

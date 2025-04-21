@@ -128,7 +128,7 @@ theme: /Tasks
             q: * (вперед:more/назад:back) *
             script:
                 deleteMessage($session.buttonsPaginationMessage);
-                var mod = $parseTree.value === "more" ? 3 : -3;
+                var mod = $parseTree.value === "more" ? 5 : -5;
                 $session.paginatorCurPos += mod;
                 $reactions.transition("/Tasks/Search");
 

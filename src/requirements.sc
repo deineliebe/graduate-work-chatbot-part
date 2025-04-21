@@ -17,7 +17,9 @@ require: dateTime/dateTime.sc
 require: patterns/patterns.sc
 
 require: scripts/functions.js
+require: scripts/init.js
 
 require: themes/globalStates.sc
 require: themes/tasks.sc
 require: themes/test.sc
+require: themes/error.sc

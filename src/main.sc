@@ -53,7 +53,7 @@ theme: /
                 q: * @duckling.email * || fromState = "/Settings"
                 script:
                     $client.email = $parseTree.value;
-                a: Спасибо! E-mail изменён (на {{$client.email}})
+                a: Спасибо! E-mail изменён на {{$client.email}}
                 go!: /HowCanIHelpYou
 
             state: CatchAll

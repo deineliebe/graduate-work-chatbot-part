@@ -35,9 +35,9 @@ theme: /Tasks
         state: GetDeadline
             a: Отлично! Приступаю к созданию задачи
             script:
-                if ($parseTree._date) $session.newTask.deadline = $parseTree._date;
-                $session.newTask.status = "TO DO";
-                $session.newTask.createdAt = moment();
+                if ($parseTree._date) $session.newTask.deadline = moment($parseTree._date).add(3, "h").subtract(1, 'months');
+                $session.newTask.status = $injector.statuses[0];
+                $session.newTask.createdAt = moment().add(3, "h");
                 $session.newTask.id = $client.tasks.length;
                 log("!!! " + toPrettyString($parseTree));
                 log("!!! " + toPrettyString($session.newTask));
@@ -109,7 +109,7 @@ theme: /Tasks
             script:
                 $temp.body = "Название: " + $session.task.name + "\n";
                 $temp.body += $session.task.description ? "Описание: " + $session.task.description + "\n" : "";
-                $temp.body += $session.task.deadline ? "Дедлайн: " + moment($session.task.deadline).format("Do MMMM h:mm") + "\n" : "";
+                $temp.body += $session.task.deadline ? "Дедлайн: " + moment($session.task.deadline).add(3, "h").format("Do MMMM h:mm") + "\n" : "";
                 $temp.body += "Статус: " + $session.task.status + "\n";
                 $temp.body += "\n(Создано: " + moment($session.task.createdAt).format("Do MMMM h:mm") + ")";
             a: {{$temp.body}}
@@ -160,7 +160,7 @@ theme: /Tasks
             
             state: Confirm
                 q: * @duckling.date::date *
-                script: $session.task.deadline = $parseTree._date;
+                script: $session.task.deadline = moment($parseTree._date).add(3, "h").subtract(1, 'months');
                 go!: /Tasks/GetTasks/ShowTask
 
             state: WrongDeadline
@@ -170,6 +170,7 @@ theme: /Tasks
 
         state: UpdateStatus
             q: * @Status *
+            a: Выберите статус
             script:
                 var buttons = [];
                 _.each($injector.statuses, function(status) {
@@ -192,7 +193,7 @@ theme: /Tasks
         state: Confirm
             q: подтверждаю
             script:
-                $client.tasks = _.filter(client.tasks, function(task) {
+                $client.tasks = _.filter($client.tasks, function(task) {
                     return $session.task.id != task.id;
                 });
             a: Хорошо! Задача {{$session.task.id}} удалена

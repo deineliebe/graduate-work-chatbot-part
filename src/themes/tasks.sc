@@ -191,8 +191,12 @@ theme: /Tasks
 
         state: Confirm
             q: подтверждаю
-            script: $client.tasks.remove($session.task.id);
+            script:
+                $client.tasks = _.filter(client.tasks, function(task) {
+                    return $session.task.id != task.id;
+                });
             a: Хорошо! Задача {{$session.task.id}} удалена
+            go!: /Tasks/GetTasks/Search
 
         state: Cancel
             q: отмена

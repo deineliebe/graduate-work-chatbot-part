@@ -68,7 +68,7 @@ theme: /Tasks
         script:
             $session.paginatorCurPos = 0;
         if: _.isEmpty($client.tasks)
-            go!: /NoTasks
+            go!: /Tasks/GetTasks/NoTasks
         else:
             a: В каком виде вы хотите посмотреть задачи?
             buttons:
@@ -80,16 +80,17 @@ theme: /Tasks
             q: * (@New/@Hot/@Status) *
             script:
                 if ($session.buttonsPaginationMessage) deleteMessage($session.buttonsPaginationMessage);
-                $session.buttonsPaginationMessage = sendMessage("Выберите задачу: введите её id или нажмите на соответствующую кнопку", pagination($session.buttons, $session.paginatorCurPos, 5));
+                $session.buttonsPaginationMessage = sendMessage("Выберите задачу: введите её id или нажмите на соответствующую кнопку", pagination($client.tasks, $session.paginatorCurPos, 5));
             
             state: GetNumber
                 q: * @duckling.number *
                 script:
-                    $session.taskId = $parseTree.value;
-                    script:
-                        deleteMessage($session.buttonsPaginationMessage);
-                        delete $session.buttonsPaginationMessage;
-                        $reactions.transition("/Tasks/GetTasks/Search");
+                    deleteMessage($session.buttonsPaginationMessage);
+                    delete $session.buttonsPaginationMessage;
+                    $session.task = _.find($client.tasks, function(task) {
+                        return task == $parseTree.value
+                    });
+                go!: /Tasks/GetTasks/ShowTask
             
             state: MoreBack
                 q: * (вперед:more) *
@@ -102,7 +103,13 @@ theme: /Tasks
 
         state: ShowTask
             a: Данные задачи:
-            script: $session.task = null;
+
+                Название: {{$session.task.name}}
+                Описание: {{$session.task.description}}
+                Дедлайн: {{$session.task.deadline}}
+                Статус: {{$session.task.status}}
+
+                (Создано: {{$session.task.createdAt}})
             buttons:
                 "Обновить" -> /Tasks/UpdateTask
                 "Удалить" -> /Tasks/DeleteTask

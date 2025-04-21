@@ -55,7 +55,7 @@ function pagination(elements, position, numOfButtons) {
         $.session.paginatorCurPos -= 1;
     }
     for (i = position; i < Math.min((position + numOfButtons - (position > 0)
-        - (position + 2 < elements.length), elements.length)); i++) {
+        - (position + 2 < elements.length)), elements.length); i++) {
         buttons.push(elements[i]);
     }
     if (i < elements.length) {

@@ -2,19 +2,20 @@ theme: /Tasks
     
     state: CreateTask
         if: _.isEmpty($session.newTask)
-            script: $session.newTask = {};
             a: Напишите название задачи
         else:
             go!: /Tasks/CreateTask/ClarifyTask
         q: * || toState="/Tasks/CreateTask/GetName"
 
         state: ResetTask
-            script: $session.newTask = {};
+            script: delete $session.newTask;
             go!: /Tasks/CreateTask/GetName
 
         state: GetName
             if: _.isEmpty($session.newTask.description)
-                script: $session.newTask.name = $session.newTask.name || $request.query;
+                script:
+                    $session.newTask = $session.newTask || {};
+                    $session.newTask.name = $session.newTask.name || $request.query;
                 a: Напишите описание для задачи
             else:
                 go!: /Tasks/CreateTask/GetDescription
@@ -40,6 +41,7 @@ theme: /Tasks
                 $session.newTask.id = $client.tasks.length;
                 $client.tasks.push($session.newTask);
             a: Задача создана, её ID: {{ $session.newTask.id}}
+            script: delete $session.newTask;
             go!: /HowCanIHelpYou
 
         state: GetWrongDeadline
@@ -63,6 +65,7 @@ theme: /Tasks
             buttons:
                 "Да" -> /Tasks/CreateTask/GetName
                 "Нет" -> /Tasks/CreateTask/ResetTask
+                "Вернуться в меню" -> /HowCanIHelpYou
 
     state: GetTasks
         script:

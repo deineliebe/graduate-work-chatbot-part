@@ -66,17 +66,23 @@ function pagination(elements, position, numOfButtons) {
 }
 
 function sendMessage(text, _buttons, _removeKeyboard) {
-    var body = {
-        "chat_id": $.client.chatId,
-        "text": text,
-        "reply_markup": {}
-    };
-    if (_buttons) body.reply_markup.inline_keyboard = [_buttons];
-    if (_removeKeyboard) body.reply_markup.remove_keyboard = true;
-    var result = $http.post($.injector.baseTelegramUrl + "bot" + $env.get("TELEGRAM_TOKEN", "") + "/sendMessage", {
-        body: body
-    });
-    return result && result.data && result.data.result && result.data.result.message_id;
+    if (isTelegramChannel()) {
+        var body = {
+            "chat_id": $.client.chatId,
+            "text": text,
+            "parse_mode": "markdown",
+            "reply_markup": {}
+        };
+        if (_buttons) body.reply_markup.keyboard = [_buttons];
+        if (_removeKeyboard) body.reply_markup.remove_keyboard = true;
+        var result = $http.post($.injector.baseTelegramUrl + "bot" + $env.get("TELEGRAM_TOKEN", "") + "/sendMessage", {
+            body: body
+        });
+        return result && result.data && result.data.result && result.data.result.message_id;
+    } else {
+        $reactions.answer(text);
+        if (_buttons) $reactions.buttons(_buttons);
+    }
 }
 
 function deleteMessage(message_id) {

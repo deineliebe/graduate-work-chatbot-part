@@ -110,14 +110,13 @@ theme: /Tasks
                     $reactions.transition("/Tasks/GetTasks/Search");
 
         state: ShowTask
-            a: Данные задачи:
-
-                Название: {{$session.task.name}}
-                {{$session.task.description && ("Описание: " + $session.task.description)}}
-                {{$session.task.deadline && ("Дедлайн: " + moment($session.task.deadline).format("h:mm Do MMMM"))}}
-                Статус: {{$session.task.status}}
-
-                (Создано: {{moment($session.task.createdAt).format("h:mm Do MMMM")}})
+            script:
+                $temp.body = "Название: " + $session.task.name + "\n";
+                $temp.body += $session.task.description ? "Описание: " + $session.task.description + "\n" : "";
+                $temp.body += $session.task.deadline ? "Дедлайн: " + moment($session.task.deadline).format("Do MMMM h:mm") + "\n" : "";
+                $temp.body += "Статус: " + $session.task.status + "\n";
+                $temp.body += "\n(Создано: " + moment($session.task.createdAt).format("Do MMMM h:mm") + ")";
+            a: {{$temp.body}}
             buttons:
                 "Обновить" -> /Tasks/UpdateTask
                 "Удалить" -> /Tasks/DeleteTask

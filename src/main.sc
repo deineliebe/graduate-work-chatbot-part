@@ -22,6 +22,7 @@ theme: /
             a: Привет! Рада видеть тебя, {{$client.username}}!
         else:
             scriptEs6:
+                moment.locale("ru");
                 $client.chatId = $request.data.chatId;
                 if (testMode()) $.client.id = 0;
                 else $.client.id = 0;

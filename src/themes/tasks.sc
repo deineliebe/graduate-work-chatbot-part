@@ -113,11 +113,11 @@ theme: /Tasks
             a: Данные задачи:
 
                 Название: {{$session.task.name}}
-                Описание: {{$session.task.description}}
-                Дедлайн: {{$session.task.deadline}}
+                {{$session.task.description && ("Описание: " + $session.task.description)}}
+                {{$session.task.deadline && ("Дедлайн: " + moment($session.task.deadline).format("h:mm Do MMMM"))}}
                 Статус: {{$session.task.status}}
 
-                (Создано: {{$session.task.createdAt}})
+                (Создано: {{moment($session.task.createdAt).format("h:mm Do MMMM")}})
             buttons:
                 "Обновить" -> /Tasks/UpdateTask
                 "Удалить" -> /Tasks/DeleteTask

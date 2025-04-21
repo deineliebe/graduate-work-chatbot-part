@@ -133,9 +133,9 @@ theme: /Tasks
                 var paginatorCurPos = $session.paginatorCurPos + ($parseTree.value !== "more") ? mod * -1 : mod;
                 if (paginatorCurPos > 0) {
                     mod -= 1;
-                    if (paginatorCurPos + 4 < $clients.tasks.length) mod -= 1;
+                    if (paginatorCurPos + 4 < $client.tasks.length) mod -= 1;
                 } else {
-                    if (paginatorCurPos + 5 < $clients.tasks.length) mod -= 1;
+                    if (paginatorCurPos + 5 < $client.tasks.length) mod -= 1;
                 }
                 $session.paginatorCurPos += ($parseTree.value !== "more") ? mod * -1 : mod;
                 $reactions.transition("/Tasks/Search");

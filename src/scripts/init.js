@@ -1,11 +1,11 @@
-bind("onAnyError", function($context) {
+bind("onAnyError", function() {
     $reactions.answer("Прости, произошла техническая ошибка. Попробуй написать мне попозже");
 });
 
 bind("onScriptError", function() {
-    transition("/Error/ScriptAndDialogError");
+    $reactions.transition("/Error/ScriptAndDialogError");
 });
 
 bind("onDialogError", function() {
-    transition("/Error/ScriptAndDialogError");
+    $reactions.transition("/Error/ScriptAndDialogError");
 });

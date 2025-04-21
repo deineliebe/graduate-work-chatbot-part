@@ -73,9 +73,7 @@ function sendMessage(text, _buttons, _removeKeyboard) {
             "parse_mode": "markdown",
             "reply_markup": {}
         };
-        if (_buttons) body.reply_markup.keyboard = [_.map(_buttons, function(button) {
-            return {text: button};
-        })];
+        if (_buttons) body.reply_markup.keyboard = [_buttons];
         if (_removeKeyboard) body.reply_markup.remove_keyboard = true;
         var result = $http.post($.injector.baseTelegramUrl + "bot" + $env.get("TELEGRAM_TOKEN", "") + "/sendMessage", {
             body: body

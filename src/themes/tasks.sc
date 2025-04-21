@@ -83,7 +83,10 @@ theme: /Tasks
             q: * (@New/@Hot/@Status) *
             script:
                 if ($session.buttonsPaginationMessage) deleteMessage($session.buttonsPaginationMessage);
-                $session.buttonsPaginationMessage = sendMessage("Выберите задачу: введите её id или нажмите на соответствующую кнопку", pagination($client.tasks, $session.paginatorCurPos, 5));
+                $session.buttonsPaginationMessage = sendMessage("Выберите задачу: введите её id или нажмите на соответствующую кнопку",
+                    pagination(_.map($client.tasks, function(task) {
+                        return {text: task.id};
+                    }), $session.paginatorCurPos, 5));
             
             state: GetNumber
                 q: * @duckling.number *

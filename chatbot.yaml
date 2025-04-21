@@ -19,3 +19,4 @@ injector:
   catchAllLimit: 3
   baseTelegramUrl: https://api.telegram.org/
   statuses: ["Запланировано", "В работе", "Заблокировано", "Готово", "Отменено"]
+  tasksOnPage: 5

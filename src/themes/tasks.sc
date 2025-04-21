@@ -111,7 +111,7 @@ theme: /Tasks
             $session.buttonsPaginationMessage = sendMessage("Выберите задачу: введите её id или нажмите на соответствующую кнопку",
                 pagination(_.map($client.tasks, function(task) {
                     return {text: task.name + " (" + task.id + ")"};
-                }), $session.paginatorCurPos, 5));
+                }), $session.paginatorCurPos, $injector.tasksOnPage));
         
         state: GetNumber
             q: * @duckling.number::number *
@@ -128,8 +128,16 @@ theme: /Tasks
             q: * (вперед:more/назад:back) *
             script:
                 deleteMessage($session.buttonsPaginationMessage);
-                var mod = $parseTree.value === "more" ? 5 : -5;
-                $session.paginatorCurPos += mod;
+                var mod = $injector.tasksOnPage;
+                if ($parseTree.value !== "more") mod *= -1;
+                var paginatorCurPos = $session.paginatorCurPos + ($parseTree.value !== "more") ? mod * -1 : mod;
+                if (paginatorCurPos > 0) {
+                    mod -= 1;
+                    if (paginatorCurPos + 4 < $clients.tasks.length) mod -= 1;
+                } else {
+                    if (paginatorCurPos + 5 < $clients.tasks.length) mod -= 1;
+                }
+                $session.paginatorCurPos += ($parseTree.value !== "more") ? mod * -1 : mod;
                 $reactions.transition("/Tasks/Search");
 
     state: ShowTask

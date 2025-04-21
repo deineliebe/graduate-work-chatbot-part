@@ -52,7 +52,6 @@ function pagination(elements, position, numOfButtons) {
 
     if (position > 0) {
         buttons.push({text: "Назад"});
-        $.session.paginatorCurPos -= 1;
     }
     for (i = position; i < Math.min((position + numOfButtons - (position > 0)
         - (position + 2 < elements.length)), elements.length); i++) {

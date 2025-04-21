@@ -85,17 +85,18 @@ theme: /Tasks
                 if ($session.buttonsPaginationMessage) deleteMessage($session.buttonsPaginationMessage);
                 $session.buttonsPaginationMessage = sendMessage("Выберите задачу: введите её id или нажмите на соответствующую кнопку",
                     pagination(_.map($client.tasks, function(task) {
-                        return {text: task.id};
+                        return {text: "{{task.name}} ({{task.id}})"};
                     }), $session.paginatorCurPos, 5));
             
             state: GetNumber
-                q: * @duckling.number *
+                q: * @duckling.number::number *
                 script:
-                    deleteMessage($session.buttonsPaginationMessage);
+                    log("0 " + toPrettyString($parseTree));
                     delete $session.buttonsPaginationMessage;
                     $session.task = _.find($client.tasks, function(task) {
-                        return task == $parseTree.value
+                        return task == $parseTree._number.value
                     });
+                    log("1 " + toPrettyString($session.task));
                 go!: /Tasks/GetTasks/ShowTask
             
             state: MoreBack
@@ -103,6 +104,7 @@ theme: /Tasks
                 q: * (назад:back) *
                 q: * (вперед:more/назад:back) *
                 script:
+                    deleteMessage($session.buttonsPaginationMessage);
                     var mod = $parseTree.value === "more" ? 3 : -3;
                     $session.paginatorCurPos += mod;
                     $reactions.transition("/Tasks/GetTasks/Search");

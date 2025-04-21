@@ -24,7 +24,7 @@ theme: /
             scriptEs6:
                 if (testMode()) $.client.id = 0;
                 else $.client.id = 0;
-                $.client.tasks = [];
+                $client.tasks = [];
             a: Привет! Я - бот помощник для планирования задач
         go!: /HowCanIHelpYou
 

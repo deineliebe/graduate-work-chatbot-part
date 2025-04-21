@@ -85,7 +85,7 @@ theme: /Tasks
                 if ($session.buttonsPaginationMessage) deleteMessage($session.buttonsPaginationMessage);
                 $session.buttonsPaginationMessage = sendMessage("Выберите задачу: введите её id или нажмите на соответствующую кнопку",
                     pagination(_.map($client.tasks, function(task) {
-                        return {text: "{{task.name}} ({{task.id}})"};
+                        return {text: task.name + "(" + task.id + ")"};
                     }), $session.paginatorCurPos, 5));
             
             state: GetNumber

@@ -129,7 +129,6 @@ theme: /Tasks
             script:
                 deleteMessage($session.buttonsPaginationMessage);
                 var mod = $injector.tasksOnPage;
-                if ($parseTree.value !== "more") mod *= -1;
                 var paginatorCurPos = $session.paginatorCurPos + ($parseTree.value !== "more") ? mod * -1 : mod;
                 if (paginatorCurPos > 0) {
                     mod -= 1;

@@ -59,7 +59,6 @@ function pagination(elements, position, numOfButtons) {
     }
     if (i < elements.length) {
         buttons.push({text: "Вперёд"});
-        $.session.paginatorCurPos -= 1;
     }
     return buttons;
 }

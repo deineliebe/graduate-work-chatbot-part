@@ -9,7 +9,7 @@ theme: /Tasks
 
         state: ResetTask
             script: delete $session.newTask;
-            go!: /Tasks/CreateTask/GetName
+            go: /Tasks/CreateTask
 
         state: GetName
             if: _.isEmpty($session.newTask.description)

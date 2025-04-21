@@ -65,9 +65,9 @@ theme: /
         state: CatchAll
             event: noMatch
             a: К сожалению, не смогла понять, что вы хотите сделать. Уточните ваш запрос
-        buttons:
-            "Поменять электронный адрес" -> /Settings/ChangeEmail
-            "Вернуться в меню" -> /HowCanIHelpYou
+            buttons:
+                "Поменять электронный адрес" -> /Settings/ChangeEmail
+                "Вернуться в меню" -> /HowCanIHelpYou
 
     state: GlobalCatchAll
         event!: noMatch

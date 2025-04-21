@@ -71,7 +71,6 @@ function sendMessage(text, _buttons, _removeKeyboard) {
     var body = {
         "chat_id": $.client.chatId,
         "text": text,
-        "parse_mode": parseMode,
         "reply_markup": {}
     };
     if (_buttons) body.reply_markup.inline_keyboard = [_buttons];

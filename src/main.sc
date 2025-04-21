@@ -18,7 +18,6 @@ theme: /
 
     state: Start
         q!: $regex</start>
-        script: $client.telegramToken = "bot" + $env.get("TELEGRAM_TOKEN", "");
         if: $client.isAuthorized
             a: Привет! Рада видеть тебя, {{$client.username}}!
         else:

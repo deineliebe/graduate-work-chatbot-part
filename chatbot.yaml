@@ -14,3 +14,7 @@ nlp:
   intentNoMatchThresholds:
     phrases: 0.2
     patterns: 0.2
+
+injector:
+  catchAllLimit: 3
+  baseTelegramUrl: https://api.telegram.org/

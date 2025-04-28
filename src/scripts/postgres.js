@@ -24,7 +24,7 @@ function initSQL() {
 const users = {
     async createTable() {
         initSQL();
-        return sql`CREATE TABLE users (
+        return sql`CREATE TABLE IF NOT EXISTS users (
             id SERIAL PRIMARY KEY,
             channelid VARCHAR(25) UNIQUE
         );`;

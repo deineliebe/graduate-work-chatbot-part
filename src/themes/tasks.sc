@@ -178,7 +178,7 @@ theme: /Tasks
             $temp.body += $session.task.description ? "Описание: " + $session.task.description + "\n" : "";
             $temp.body += $session.task.deadline ? "Дедлайн: " + moment($session.task.deadline).locale("ru").format("Do MMMM YY") + "\n" : "";
             $temp.body += "Статус: " + $session.task.status + "\n";
-            $temp.body += "\n(Создано: " + moment($session.task.createdAt).locale("ru").format("Do MMMM YY h:mm") + ")";
+            $temp.body += "\n(Создано: " + moment($session.task.createdAt).locale("ru").format("Do MMMM YYYY h:mm") + ")";
         a: {{$temp.body}}
         buttons:
             "Обновить" -> /Tasks/UpdateTask

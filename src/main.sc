@@ -118,8 +118,12 @@ theme: /
     state: Contacts
         q!: $regex</contacts>
         a: Привет!
+        
+            Это - мой работа для моего диплома и в дополнение - пет-проект
+            С этим чат-ботом связан сайт: app.smalltaskplanner.ru
+            Репозиторий (для других кодеров): https://github.com/deineliebe/graduate-work-chatbot-part
 
-            Я Марина, это - мой курсовой проект. С этим чат-ботом связан сайт: app.smalltaskplanner.ru
+            Удачи всем owo
 
     state: GlobalCatchAll
         event!: noMatch

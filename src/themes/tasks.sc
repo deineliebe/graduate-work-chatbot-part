@@ -73,7 +73,7 @@ theme: /Tasks
                 a: Вы уже заполняли заявку:
                     Название: {{$session.newTask.name}}
                     Описание: {{$session.newTask.description}}
-                    Дедлайн: {{_.isEmpty($session.task.deadline) ?  "-" : moment($session.task.deadline).locale("ru").format("Do MMMM h:mm")}}
+                    Дедлайн: {{_.isEmpty($session.newTask.deadline) ?  "-" : moment($session.newTask.deadline).locale("ru").format("Do MMMM h:mm")}}
                     Хотите продолжить заполнение?
             elseif: $session.newTask.description
                 a: Вы уже заполняли заявку:

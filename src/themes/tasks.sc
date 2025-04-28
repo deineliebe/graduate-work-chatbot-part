@@ -1,7 +1,7 @@
 theme: /Tasks
     
     state: CreateTask
-        if: _.isEmpty($session.newTask)
+        if: !$session.newTask
             a: Напишите название задачи
         else:
             go!: /Tasks/CreateTask/ClarifyTask

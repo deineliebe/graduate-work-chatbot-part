@@ -43,7 +43,7 @@ const users = {
     async getUser(channelid) {
         await users.createTable();
         return sql`SELECT * FROM users
-            WHERE channelid = '${channelid}';`.then(res => { return _.first(res); });;
+            WHERE channelid = ${channelid};`.then(res => { return _.first(res); });;
     },
 };
 

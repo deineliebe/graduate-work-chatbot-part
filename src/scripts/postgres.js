@@ -26,24 +26,24 @@ const users = {
         initSQL();
         return sql`CREATE TABLE IF NOT EXISTS users (
             id SERIAL PRIMARY KEY,
-            channelid VARCHAR(25) UNIQUE
+            channel_id VARCHAR(25) UNIQUE
         );`;
     },
     async addUser(channelUserId) {
         await users.createTable();
-        return sql`INSERT INTO users(channelid)
+        return sql`INSERT INTO users(channel_id)
             VALUES (${channelUserId})
-            ON CONFLICT (channelid) DO UPDATE
-            SET channelid = EXCLUDED.channelid;`;
+            ON CONFLICT (channel_id) DO UPDATE
+            SET channel_id = EXCLUDED.channel_id;`;
     },
     async getUsers() {
         await users.createTable();
         return sql`SELECT * FROM users;`;
     },
-    async getUser(channelid) {
+    async getUser(channelId) {
         await users.createTable();
         return sql`SELECT * FROM users
-            WHERE channelid = ${channelid};`.then(res => { return _.first(res); });;
+            WHERE channel_id = ${channelId};`.then(res => { return _.first(res); });;
     },
 };
 
@@ -66,6 +66,37 @@ const emailData = {
     },
 };
 
+const userTasks = {
+    async createTable() {
+        initSQL();
+        return sql`CREATE TABLE IF NOT EXISTS userTasks (
+            user_id INT NOT NULL,
+            task_id INT NOT NULL,
+            FOREIGN KEY (user_id) REFERENCES users (id),
+            FOREIGN KEY (task_id) REFERENCES tasks (id)
+        );`;
+    },
+    async addTaskToAUser(userId, taskId) {
+        await userTasks.createTable();
+        return sql`INSERT INTO userTasks(user_id, task_id)
+            VALUES (${userId}, ${taskId});`;
+    },
+    async getTasks() {
+        await userTasks.createTable();
+        return sql`SELECT * FROM userTasks;`;
+    },
+    async getTasksWithSpecificStatus(status) {
+        await userTasks.createTable();
+        return sql`SELECT * FROM userTasks
+            WHERE status=${status};`;
+    },
+    async getTask(id) {
+        await userTasks.createTable();
+        return sql`SELECT * FROM userTasks
+            WHERE id = ${id};`.then(res => { return _.first(res); });
+    },
+};
+
 const tasks = {
     async createTable() {
         initSQL();
@@ -74,28 +105,51 @@ const tasks = {
             deadline VARCHAR(100),
             username VARCHAR(50),
             status VARCHAR(50),
+	        created_at DATE,
             CONSTRAINT task_id PRIMARY KEY (name, username)
         );`;
     },
-    async addTask(name, deadline, username, status) {
-        await users.createTable();
-        return sql`INSERT INTO tasks(name, deadline, username, status)
-            VALUES (${name}, ${deadline}, ${username}, ${status})
-            ON CONFLICT (username) DO NOTHING;`;
+    async addTask(name, deadline, createdAt, status) {
+        await tasks.createTable();
+        await userTasks.createTable();
+        return sql`INSERT INTO tasks(name, description, deadline, created_at, status)
+            VALUES (${name}, ${description}, ${deadline}, ${createdAt}, ${status});`;
     },
-    async getTasks() {
-        await users.createTable();
-        return sql`SELECT * FROM tasks;`;
+    async getUserTasksOrderedByCreatedDate(userId) {
+        await tasks.createTable();
+        await userTasks.createTable();
+        return sql`SELECT user_id, id, name, description, deadline, created_at, status
+            FROM userTasks
+            LEFT JOIN tasks
+            ON userTasks.task_id = tasks.id
+            WHERE user_id = ${userId}
+            ORDER BY created_at DESC;`;
+    },
+    async getUserTasksOrderedByDeadline(userId) {
+        await tasks.createTable();
+        await userTasks.createTable();
+        return sql`SELECT user_id, id, name, description, deadline, created_at, status
+            FROM userTasks
+            LEFT JOIN tasks
+            ON userTasks.task_id = tasks.id
+            WHERE user_id = ${userId} AND deadline >= CURRENT_DATE
+            ORDER BY deadline ASC;`;
     },
     async getTasksWithSpecificStatus(status) {
-        await users.createTable();
+        await tasks.createTable();
+        await userTasks.createTable();
         return sql`SELECT * FROM tasks
-            WHERE status=${status};`;
+            FROM userTasks
+            LEFT JOIN tasks
+            ON userTasks.task_id = tasks.id
+            WHERE status=${status}
+            ORDER BY created_at DESC;`;
     },
-    async getTask(name, username) {
-        await users.createTable();
+    async getTask(id) {
+        await tasks.createTable();
+        await userTasks.createTable();
         return sql`SELECT * FROM tasks
-            WHERE name = ${name}, username=${username};`.then(res => { return _.first(res); });
+            WHERE id = ${id};`.then(res => { return _.first(res); });
     },
 };
 
@@ -107,7 +161,7 @@ const statuses = {
         );`;
     },
     async getStatuses() {
-        await users.createTable();
+        await statuses.createTable();
         return sql`SELECT status FROM statuses;`.then(res => { return _.pluck(res, 'status'); });
     },
 };

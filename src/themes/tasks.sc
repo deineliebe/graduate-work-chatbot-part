@@ -77,24 +77,28 @@ theme: /Tasks
                 "Вернуться в меню" -> /HowCanIHelpYou
 
     state: GetTasks
-        script:
-            $session.paginatorCurPos = 0;
-        if: _.isEmpty($client.tasks)
-            go!: /Tasks/GetTasks/NoTasks
-        else:
-            a: В каком виде вы хотите посмотреть задачи?
-            buttons:
-                "Сначала новые"
-                "Сначала горящие"
-                "С определённым статусом"
+        script: $session.paginatorCurPos = 0;
+        a: В каком виде вы хотите посмотреть задачи?
+        buttons:
+            "Сначала новые"
+            "Сначала горящие"
+            "С определённым статусом"
         q: * @New * || toState = "/Tasks/GetTasks/ChooseNewTaskSearch"
         q: * @Hot * || toState = "/Tasks/GetTasks/ChooseHotTaskSearch"
         q: * @Status * || toState = "/Tasks/GetTasks/ChooseStatusTaskSearch"
 
         state: ChooseNewTaskSearch
+            scriptEs6: $session.tasks = await pg.tasks.getUserTasksOrderedByCreatedDate($client.id);
+            if: _.isEmpty($session.tasks)
+                a: На текущий момент у вас нет задач
+                go!: /Tasks/GetTasks/NoTasks
             go!: /Tasks/Search
 
         state: ChooseHotTaskSearch
+            scriptEs6: $session.tasks = await pg.tasks.getUserTasksOrderedByCreatedDate($client.id);
+            if: _.isEmpty($session.tasks)
+                a: На текущий момент у вас нет задач с дедлайнами сегодня и в будущем
+                go!: /Tasks/GetTasks/NoTasks
             go!: /Tasks/Search
 
         state: ChooseStatusTaskSearch
@@ -108,10 +112,16 @@ theme: /Tasks
             
             state: Confirm
                 q: *
+                scriptEs6: $session.tasks = await pg.tasks.getTasksWithSpecificStatus($client.id);
+                if: _.isEmpty($session.tasks)
+                    a: На текущий момент у вас нет задач с таким статусом
+                    go!: /Tasks/GetTasks/NoTasks
                 go!: /Tasks/Search
 
         state: NoTasks
-            a: На текущий момент у вас нет задач. Хотите создать?
+            random:
+                a: Вы хотите создать задачу?
+                a: Хотите создать?
             buttons:
                 "Да, создать задачу" -> /Tasks/CreateTask
                 "Нет, вернуться в меню" -> /HowCanIHelpYou

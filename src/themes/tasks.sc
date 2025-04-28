@@ -204,6 +204,7 @@ theme: /Tasks
             a: Введите новое название задачи
             
             state: Confirm
+                event: noMatch
                 q: *
                 scriptEs6:
                     $session.task.name = $request.query;
@@ -215,6 +216,7 @@ theme: /Tasks
             a: Введите новое описание задачи
             
             state: Confirm
+                event: noMatch
                 q: *
                 scriptEs6:
                     $session.task.description = $request.query;
@@ -233,6 +235,7 @@ theme: /Tasks
                 go!: /Tasks/ShowTask
 
             state: WrongDeadline
+                event: noMatch
                 q: *
                 a: К сожалению, не удалось распознать дату в вашем ответе. Попробуйте ещё раз
                 go: /Tasks/UpdateTask/GetDeadline
@@ -248,6 +251,7 @@ theme: /Tasks
                 $reactions.buttons(buttons);
             
             state: Confirm
+                event: noMatch
                 q: *
                 scriptEs6:
                     $session.task.status = $request.query;

@@ -126,9 +126,7 @@ theme: /Tasks
             state: Confirm
                 q: *
                 scriptEs6:
-                    log("!!!: " + toPrettyString(status));
                     $session.tasks = await pg.tasks.getTasksWithSpecificStatus($client.id, $request.query);
-                    log("!!!: " + toPrettyString($session.tasks));
                 if: _.isEmpty($session.tasks)
                     a: На текущий момент у вас нет задач с таким статусом
                     go!: /Tasks/GetTasks/NoTasks

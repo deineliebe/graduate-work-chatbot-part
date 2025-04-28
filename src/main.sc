@@ -57,39 +57,46 @@ theme: /
                 script: 
                     $client.email = $parseTree.value;
                     $session.code = Math.floor(Math.random() * $injector.emailCodeLimit);
-                a: Спасибо! На адрес {{$client.email}}  отправлен код. Введи его
                 Email:
                     destination = {{$client.email}}
                     subject = Код для регистрации почты (Task Planner)
                     text = {{$session.code}}
+                    okState = /Settings/GetEmail/SendEmail
                     errorState = /Settings/GetEmail/Error
                 buttons:
                     "Назад" -> /Settings/ChangeEmail
                     "Вернуться в меню" -> /HowCanIHelpYou
 
-                state: Confirm
-                    q: * @duckling.number::number *
-                    if: Number($parseTree._number) == $session.code
-                        script:
-                            $session.password = changeEmail($client.id, $client.email, $injector.passwordLength);
-                            changeEmail($client.id, $client.email, $session.password);
-                        Email:
-                            destination = {{$client.email}}
-                            subject = Код для регистрации почты (Task Planner)
-                            text = Мы привязали ваш адрес! Пароль: {{$session.password}}
-                            errorState = /Settings/GetEmail/Error
-                        a: Отлично! Ваш адрес привязан
-                        go!: /HowCanIHelpYou
-                    else:
-                        a: К сожалению, код некорректный. Попробуете ещё раз?
+                    state: SendEmail
+                        a: Спасибо! На адрес {{$client.email}}  отправлен код. Введи его
+
+                        state: Confirm
+                            q: * @duckling.number::number *
+                            if: Number($parseTree._number) == $session.code
+                                script:
+                                    $session.password = changeEmail($client.id, $client.email, $injector.passwordLength);
+                                    changeEmail($client.id, $client.email, $session.password);
+                                Email:
+                                    destination = {{$client.email}}
+                                    subject = Код для регистрации почты (Task Planner)
+                                    text = Мы привязали ваш адрес! Пароль: {{$session.password}}
+                                    okState = /Settings/GetEmail/SendEmail/SuccessMessage
+                                    errorState = /Settings/GetEmail/Error
+                            else:
+                                a: К сожалению, код некорректный. Попробуете ещё раз?
+                                buttons:
+                                    "Вернуться в меню" -> /HowCanIHelpYou
+                                
+                            state: SuccessMessage
+                                a: Отлично! Ваш адрес ({{$client.email}}) привязан
+                                    Пароль уже выслан на указанную вами почту. Вы сможете сменить его на сайте, в настройках
+                                go!: /HowCanIHelpYou
+
+                    state: CatchAll
+                        event: noMatch
+                        a: К сожалению, не смогла распознать код
                         buttons:
                             "Вернуться в меню" -> /HowCanIHelpYou
-
-                state: CatchAll
-                    event: noMatch
-                    a: К сожалению, не смогла распознать код. 
-                    buttons:
-                        "Вернуться в меню" -> /HowCanIHelpYou
 
                 state: Error
                     a: К сожалению, произошла ошибка. Попробуйте привязать email через сайт

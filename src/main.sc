@@ -50,7 +50,7 @@ theme: /
         q: * duckling.email * || toState = "/Settings/ChangeEmail/ConfirmEmail"
 
         state: ChangeEmail
-            a: Введите электронный адрес:
+            a: Введите электронный адрес
 
             state: GetEmail
                 q: * @duckling.email * || fromState = "/Settings"
@@ -68,8 +68,8 @@ theme: /
                     "Вернуться в меню" -> /HowCanIHelpYou
 
                 state: Confirm
-                    q: * @duckling.number *
-                    if: $session.code
+                    q: * @duckling.number::number *
+                    if: Number($parseTree._number) == $session.code
                         script:
                             $session.password = changeEmail($client.id, $client.email, $injector.passwordLength);
                             changeEmail($client.id, $client.email, $session.password);
@@ -84,6 +84,12 @@ theme: /
                         a: К сожалению, код некорректный. Попробуете ещё раз?
                         buttons:
                             "Вернуться в меню" -> /HowCanIHelpYou
+
+                state: CatchAll
+                    event: noMatch
+                    a: К сожалению, не смогла распознать код. 
+                    buttons:
+                        "Вернуться в меню" -> /HowCanIHelpYou
 
                 state: Error
                     a: К сожалению, произошла ошибка. Попробуйте привязать email через сайт

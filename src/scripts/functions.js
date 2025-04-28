@@ -95,6 +95,15 @@ function deleteMessage(message_id) {
     });
 }
 
+function gen_password(len){
+    var password = "";
+    var symbols = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!№;%:?*()_+=";
+    for (var i = 0; i < len; i++){
+        password += symbols.charAt(Math.floor(Math.random() * symbols.length));     
+    }
+    return password;
+}
+
 function isTelegramChannel() {
     return !testMode() && $.request.channelType === "telegram";
 }

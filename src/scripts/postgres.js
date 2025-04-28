@@ -47,6 +47,25 @@ const users = {
     },
 };
 
+const emailData = {
+    async createTable() {
+        initSQL();
+        return sql`CREATE TABLE IF NOT EXISTS authorizationData (
+            id INT NOT NULL,
+            email VARCHAR(256) NOT NULL UNIQUE PRIMARY KEY,
+            password VARCHAR(30) NOT NULL,
+            FOREIGN KEY (id) REFERENCES users (id)
+        );`;
+    },
+    async changeEmail(id, email, password) {
+        await users.createTable();
+        return sql`INSERT INTO authorizationData(id, email)
+            VALUES (${id}, ${email}, ${password})
+            ON CONFLICT (id) DO UPDATE
+            SET email = EXCLUDED.email;`;
+    },
+};
+
 const tasks = {
     async createTable() {
         initSQL();
@@ -76,11 +95,26 @@ const tasks = {
     async getTask(name, username) {
         await users.createTable();
         return sql`SELECT * FROM tasks
-            WHERE name = ${name}, username=${username};`.then(res => { return _.first(res); });;
+            WHERE name = ${name}, username=${username};`.then(res => { return _.first(res); });
+    },
+};
+
+const statuses = {
+    async createTable() {
+        initSQL();
+        return sql`CREATE TABLE IF NOT EXISTS statuses (
+            status VARCHAR(25) PRIMARY KEY
+        );`;
+    },
+    async getStatuses() {
+        await users.createTable();
+        return sql`SELECT status FROM statuses;`;
     },
 };
 
 export default {
     users,
-    tasks
+    emailData,
+    tasks,
+    statuses
 };

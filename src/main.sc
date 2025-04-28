@@ -27,9 +27,7 @@ theme: /
                 if (testMode()) $.client.id = 0;
                 else {
                     $client.id = (await pg.users.getUser($client.chatId)).id;
-                    log("!!! " + toPrettyString($client.id));
                 }
-                $client.tasks = [];
             a: Привет! Я - бот помощник для планирования задач
         go!: /HowCanIHelpYou
 
@@ -40,6 +38,7 @@ theme: /
             "Создай задачу" -> /Tasks/CreateTask
             "Покажи задачи" -> /Tasks/GetTasks
             "Настройки" -> /Settings
+            "Контакты" -> /Contacts
 
     state: Settings
         q!: [~показать/~поменять] (~настройки/~параметр/конфиг*)
@@ -53,12 +52,39 @@ theme: /
         state: ChangeEmail
             a: Введите электронный адрес:
 
-            state: ConfirmEmail
+            state: GetEmail
                 q: * @duckling.email * || fromState = "/Settings"
-                script:
-                    $client.email = $parseTree.value;
-                a: Спасибо! E-mail изменён на {{$client.email}}
-                go!: /HowCanIHelpYou
+                script: $session.code = Math.floor(Math.random() * $injector.emailCodeLimit);
+                a: Спасибо! На адрес {{$client.email}}  отправлен код. Введи его
+                Email:
+                    destination = {{$client.email}}
+                    subject = Код для регистрации почты (Task Planner)
+                    text = {{$session.code}}
+                    errorState = /Settings/GetEmail/Error
+                buttons:
+                    "Назад" -> /Settings/ChangeEmail
+                    "Вернуться в меню" -> /HowCanIHelpYou
+
+                state: Confirm
+                    q: * @duckling.number *
+                    if: $session.code
+                        script:
+                            $session.password = changeEmail($client.id, $client.email, $injector.passwordLength);
+                            changeEmail($client.id, $client.email, $session.password);
+                        Email:
+                            destination = {{$client.email}}
+                            subject = Код для регистрации почты (Task Planner)
+                            text = Мы привязали ваш адрес! Пароль: {{$session.password}}
+                            errorState = /Settings/GetEmail/Error
+                        a: Отлично! Ваш адрес привязан
+                        go!: /HowCanIHelpYou
+                    else:
+                        a: К сожалению, код некорректный. Попробуете ещё раз?
+                        buttons:
+                            "Вернуться в меню" -> /HowCanIHelpYou
+
+                state: Error
+                    К сожалению, произошла ошибка. Попробуйте привязать email через сайт
 
             state: CatchAll
                 event: noMatch
@@ -72,6 +98,12 @@ theme: /
             buttons:
                 "Поменять электронный адрес" -> /Settings/ChangeEmail
                 "Вернуться в меню" -> /HowCanIHelpYou
+
+    state: Contacts
+        q!: $regex</contacts>
+        a: Привет!
+
+            Я Марина, это - мой курсовой проект. С этим чат-ботом связан сайт: app.smalltaskplanner.ru
 
     state: GlobalCatchAll
         event!: noMatch

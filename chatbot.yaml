@@ -20,3 +20,5 @@ injector:
   baseTelegramUrl: https://api.telegram.org/
   statuses: ["Бэклог", "В работе", "В блоке", "Готово", "Отменено"]
   tasksOnPage: 5
+  emailCodeLimit: 100000
+  passwordLength: 10

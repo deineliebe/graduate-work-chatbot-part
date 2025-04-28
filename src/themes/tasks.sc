@@ -34,9 +34,9 @@ theme: /Tasks
 
         state: GetDeadline
             a: Отлично! Приступаю к созданию задачи
-            script:
+            scriptEs6:
                 if ($parseTree._date) $session.newTask.deadline = moment($parseTree._date).add(3, "h").subtract(1, 'months');
-                $session.newTask.status = $injector.statuses[0];
+                $session.newTask.status = _.first(await pg.statuses.getStatuses()) || "Бэклог";
                 $session.newTask.createdAt = moment().add(3, "h");
                 $session.newTask.id = $client.tasks.length;
                 log("!!! " + toPrettyString($parseTree));
@@ -88,9 +88,9 @@ theme: /Tasks
 
         state: ChooseStatusTaskSearch
             a: Выберите статус
-            script:
+            scriptEs6:
                 var buttons = [];
-                _.each($injector.statuses, function(status) {
+                _.each(await pg.statuses.getStatuses(), function(status) {
                     buttons.push({text: status});
                 });
                 $reactions.buttons(buttons);
@@ -199,9 +199,9 @@ theme: /Tasks
         state: UpdateStatus
             q: * @Status *
             a: Выберите статус
-            script:
+            scriptEs6:
                 var buttons = [];
-                _.each($injector.statuses, function(status) {
+                _.each(await pg.statuses.getStatuses(), function(status) {
                     buttons.push({text: status});
                 });
                 $reactions.buttons(buttons);

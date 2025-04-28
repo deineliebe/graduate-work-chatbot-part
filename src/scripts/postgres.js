@@ -51,7 +51,7 @@ const emailData = {
     async createTable() {
         initSQL();
         return sql`CREATE TABLE IF NOT EXISTS authorizationData (
-            id INT NOT NULL,
+            id INT NOT NULL UNIQUE,
             email VARCHAR(256) NOT NULL UNIQUE PRIMARY KEY,
             password VARCHAR(30) NOT NULL,
             FOREIGN KEY (id) REFERENCES users (id)

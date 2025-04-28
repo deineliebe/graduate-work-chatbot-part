@@ -84,7 +84,8 @@ theme: /
                             "Вернуться в меню" -> /HowCanIHelpYou
 
                 state: Error
-                    К сожалению, произошла ошибка. Попробуйте привязать email через сайт
+                    a: К сожалению, произошла ошибка. Попробуйте привязать email через сайт
+                    go!: /HowCanIHelpYou
 
             state: CatchAll
                 event: noMatch

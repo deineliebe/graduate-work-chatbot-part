@@ -59,7 +59,7 @@ const emailData = {
     },
     async changeEmail(id, email, password) {
         await users.createTable();
-        return sql`INSERT INTO authorizationData(id, email)
+        return sql`INSERT INTO authorizationData(id, email, password)
             VALUES (${id}, ${email}, ${password})
             ON CONFLICT (id) DO UPDATE
             SET email = EXCLUDED.email;`;

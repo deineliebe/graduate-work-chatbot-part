@@ -54,8 +54,8 @@ theme: /Tasks
                 $session.newTask.status = $request.query;
                 $session.newTask.createdAt = moment().add(3, "h");
                 await pg.tasks.addTask($session.newTask.name,
-                    $session.newTask.description,
-                    $session.newTask.deadline,
+                    $session.newTask.description || null,
+                    $session.newTask.deadline || null,
                     $session.newTask.createdAt,
                     $session.newTask.status);
                 $temp.taskId = (await pg.tasks.getUserLastTaskId($client.id)).id;
@@ -73,7 +73,7 @@ theme: /Tasks
                 a: Вы уже заполняли заявку:
                     Название: {{$session.newTask.name}}
                     Описание: {{$session.newTask.description}}
-                    Дедлайн: {{moment($session.task.deadline).locale("ru").format("Do MMMM h:mm")}}
+                    Дедлайн: {{_.isEmpty($session.task.deadline) ? moment($session.task.deadline).locale("ru").format("Do MMMM h:mm") : "-"}}
                     Хотите продолжить заполнение?
             elseif: $session.newTask.description
                 a: Вы уже заполняли заявку:

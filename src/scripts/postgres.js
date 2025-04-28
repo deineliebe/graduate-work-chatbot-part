@@ -155,21 +155,21 @@ const tasks = {
         await tasks.createTable();
         await userTasks.createTable();
         return sql`UPDATE tasks 
-            SET description = '${description}'
+            SET description = ${description}
             WHERE id = ${id};`;
     },
     async updateDeadline(id, deadline) {
         await tasks.createTable();
         await userTasks.createTable();
         return sql`UPDATE tasks 
-            SET deadline = '${deadline}'
+            SET deadline = ${deadline}
             WHERE id = ${id};`;
     },
     async updateStatus(id, status) {
         await tasks.createTable();
         await userTasks.createTable();
         return sql`UPDATE tasks 
-            SET status = '${status}'
+            SET status = ${status}
             WHERE id = ${id};`;
     }
 };

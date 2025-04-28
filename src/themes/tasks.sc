@@ -221,7 +221,7 @@ theme: /Tasks
                 q: *
                 scriptEs6:
                     $session.task.description = $request.query;
-                    await pg.tasks.updateDescription($client.id, $request.query);
+                    await pg.tasks.updateDescription($client.id, $session.task.description);
                 go!: /Tasks/ShowTask
 
         state: UpdateDeadline
@@ -232,7 +232,7 @@ theme: /Tasks
                 q: * @duckling.date::date *
                 scriptEs6:
                     $session.task.deadline = moment($parseTree._date).add(3, "h").subtract(1, 'months');
-                    await pg.tasks.updateDeadline($client.id, $request.query);
+                    await pg.tasks.updateDeadline($client.id, $session.task.deadline);
                 go!: /Tasks/ShowTask
 
             state: WrongDeadline
@@ -256,7 +256,7 @@ theme: /Tasks
                 q: *
                 scriptEs6:
                     $session.task.status = $request.query;
-                    await pg.tasks.updateName($client.id, $request.query);
+                    await pg.tasks.updateStatus($client.id, $session.task.status);
                 go!: /Tasks/ShowTask
 
     state: DeleteTask

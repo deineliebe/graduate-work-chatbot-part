@@ -33,7 +33,7 @@ const users = {
         await users.createTable();
         return sql`INSERT INTO users(channelid)
             VALUES (${channelUserId})
-            ON CONFLICT (channelUserId) DO UPDATE
+            ON CONFLICT (channelid) DO UPDATE
             SET channelid = EXCLUDED.channelid;`;
     },
     async getUsers() {

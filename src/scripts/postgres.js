@@ -172,7 +172,8 @@ const tasks = {
             FROM userTasks LEFT JOIN tasks
             ON userTasks.task_id = tasks.id
             WHERE user_id = ${id}
-            GROUP BY status;`;
+            GROUP BY status;`
+            .then(res => { return _.pluck(res, 'status'); });
     }
 };
 

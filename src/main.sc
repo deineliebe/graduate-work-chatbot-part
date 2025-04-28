@@ -47,7 +47,7 @@ theme: /
         buttons:
             "Поменять электронный адрес" -> /Settings/ChangeEmail
             "Вернуться в меню" -> /HowCanIHelpYou
-        q: * duckling.email * || toState = "/Settings/ChangeEmail/ConfirmEmail"
+        q: * duckling.email * || toState = "/Settings/ChangeEmail/GetEmail"
 
         state: ChangeEmail
             a: Введите электронный адрес
@@ -61,8 +61,8 @@ theme: /
                     destination = {{$client.email}}
                     subject = Код для регистрации почты (Task Planner)
                     text = {{$session.code}}
-                    okState = /Settings/GetEmail/SendEmail
-                    errorState = /Settings/GetEmail/Error
+                    okState = /Settings/ChangeEmail/GetEmail/SendEmail
+                    errorState = /Settings/ChangeEmail/GetEmail/Error
                 buttons:
                     "Назад" -> /Settings/ChangeEmail
                     "Вернуться в меню" -> /HowCanIHelpYou
@@ -80,8 +80,8 @@ theme: /
                                 destination = {{$client.email}}
                                 subject = Код для регистрации почты (Task Planner)
                                 text = Мы привязали ваш адрес! Пароль: {{$session.password}}
-                                okState = /Settings/GetEmail/SendEmail/SuccessMessage
-                                errorState = /Settings/GetEmail/Error
+                                okState = /Settings/ChangeEmail/GetEmail/SendEmail/SuccessMessage
+                                errorState = /Settings/ChangeEmail/GetEmail/Error
                         else:
                             a: К сожалению, код некорректный. Попробуете ещё раз?
                             buttons:

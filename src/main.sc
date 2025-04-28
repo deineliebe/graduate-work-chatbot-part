@@ -104,7 +104,7 @@ theme: /
 
             state: CatchAll
                 event: noMatch
-                a: К сожалению, не смогла распознать электронный адрес. 
+                a: Не смогла распознать электронный адрес. Попробуйте написать иначе
                 buttons:
                     "Вернуться в меню" -> /HowCanIHelpYou
 
@@ -124,6 +124,8 @@ theme: /
             Репозиторий (для других кодеров): https://github.com/deineliebe/graduate-work-chatbot-part
 
             Удачи всем owo
+        buttons:
+            "Вернуться в меню" -> /HowCanIHelpYou
 
     state: GlobalCatchAll
         event!: noMatch

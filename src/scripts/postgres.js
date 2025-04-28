@@ -165,6 +165,14 @@ const tasks = {
         await tasks.createTable();
         await userTasks.deleteTask(id);
         return sql`DELETE FROM tasks WHERE id = ${id};`;
+    },
+    async getStatuses(id) {
+        await tasks.createTable();
+        return sql`SELECT status
+            FROM userTasks LEFT JOIN tasks
+            ON userTasks.task_id = tasks.id
+            WHERE user_id = ${id}
+            GROUP BY status;`;
     }
 };
 

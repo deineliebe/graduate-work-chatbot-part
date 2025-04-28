@@ -122,11 +122,15 @@ theme: /Tasks
         state: ChooseStatusTaskSearch
             a: Выберите статус
             scriptEs6:
-                var buttons = [];
-                _.each(await pg.statuses.getStatuses(), function(status) {
-                    buttons.push({text: status});
+                $temp.buttons = [];
+                _.each(await pg.tasks.getStatuses($client.id), function(status) {
+                    $temp.buttons.push({text: status});
                 });
-                $reactions.buttons(buttons);
+            if: $temp.buttons
+                script: $reactions.buttons($temp.buttons);
+            else:
+                a: На текущий момент у вас нет задач
+                go!: /Tasks/GetTasks/NoTasks
             
             state: Confirm
                 q: *

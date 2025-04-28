@@ -110,14 +110,13 @@ const tasks = {
             WHERE user_id = ${userId}
             ORDER BY created_at DESC;`;
     },
-    async getUserLastTaskId(userId) {
+    async getUserLastTaskId(name, createdAt) {
         await tasks.createTable();
         await userTasks.createTable();
         return sql`SELECT id
             FROM userTasks LEFT JOIN tasks
             ON userTasks.task_id = tasks.id
-            WHERE user_id = ${userId}
-            ORDER BY created_at DESC
+            WHERE name = ${name} AND created_at = ${createdAt}
             LIMIT 1;`.then(res => { return _.first(res); });
     },
     async getUserTasksOrderedByDeadline(userId) {

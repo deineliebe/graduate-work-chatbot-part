@@ -58,7 +58,8 @@ theme: /Tasks
                     $session.newTask.deadline || null,
                     $session.newTask.createdAt,
                     $session.newTask.status);
-                $temp.taskId = (await pg.tasks.getUserLastTaskId($client.id)).id;
+                $temp.taskId = (await pg.tasks.getUserLastTaskId($session.newTask.name,
+                    $session.newTask.createdAt)).id;
                 await pg.userTasks.addTaskToAUser($client.id, $temp.taskId);
             a: Задача создана, её ID: {{$temp.taskId}}
             script: delete $session.newTask;

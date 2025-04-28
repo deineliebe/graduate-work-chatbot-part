@@ -43,10 +43,19 @@ theme: /Tasks
             scriptEs6:
                 var buttons = [];
                 _.each(await pg.statuses.getStatuses(), function(status) {
-                    buttons.push({text: status});
+                    buttons.push({text: status, transition: "/Tasks/CreateTask/CreateTask"});
                 });
                 $reactions.buttons(buttons);
-            q: * || toState="/Tasks/CreateTask/CreateTask"
+            q: * || toState="/Tasks/CreateTask/InvalidStatus"
+
+        state: GetWrongDeadline
+            a: К сожалению, не удалось распознать дату в вашем ответе. Попробуйте ещё раз
+            go!: /Tasks/CreateTask/GetDescription
+
+        state: InvalidStatus
+            q: *
+            a: Используй только кнопки, пожалуйста
+            go!: /Tasks/CreateTask/GetDeadline
 
         state: CreateTask
             a: Отлично! Приступаю к созданию задачи
@@ -63,10 +72,6 @@ theme: /Tasks
             a: Задача создана, её ID: {{$temp.taskId}}
             script: delete $session.newTask;
             go!: /HowCanIHelpYou
-
-        state: GetWrongDeadline
-            a: К сожалению, не удалось распознать дату в вашем ответе. Попробуйте ещё раз
-            go!: /Tasks/CreateTask/GetName
 
         state: ClarifyTask
             if: $session.newTask.deadline
@@ -151,6 +156,7 @@ theme: /Tasks
         state: GetNumber
             q: * @duckling.number::number *
             scriptEs6:
+                $session.currentTaskId = $parseTree._number;
                 delete $session.buttonsPaginationMessage;
             go!: /Tasks/ShowTask
         
@@ -173,7 +179,7 @@ theme: /Tasks
 
     state: ShowTask
         scriptEs6:
-            $session.task = await pg.tasks.getTask($parseTree._number);
+            $session.task = await pg.tasks.getTask($session.currentTaskId);
             $temp.body = "Название: " + $session.task.name + "\n";
             $temp.body += $session.task.description ? "Описание: " + $session.task.description + "\n" : "";
             $temp.body += $session.task.deadline ? "Дедлайн: " + moment($session.task.deadline).locale("ru").format("Do MMMM YY") + "\n" : "";
@@ -204,10 +210,8 @@ theme: /Tasks
                 "Вернуться к задаче" -> /Tasks/ShowTask
             
             state: Confirm
-                event: noMatch
                 q: *
-                scriptEs6:
-                    await pg.tasks.updateName($client.id, $request.query);
+                scriptEs6: await pg.tasks.updateName($session.currentTaskId, $request.query);
                 go!: /Tasks/ShowTask
 
         state: UpdateDescription || modal = true
@@ -217,10 +221,8 @@ theme: /Tasks
                 "Вернуться к задаче" -> /Tasks/ShowTask
             
             state: Confirm
-                event: noMatch
                 q: *
-                scriptEs6:
-                    await pg.tasks.updateDescription($client.id, $request.query);
+                scriptEs6: await pg.tasks.updateDescription($session.currentTaskId, $request.query);
                 go!: /Tasks/ShowTask
 
         state: UpdateDeadline || modal = true
@@ -233,11 +235,10 @@ theme: /Tasks
                 q: * @duckling.date::date *
                 scriptEs6:
                     const deadline = moment($parseTree._date).add(3, "h").subtract(1, 'months');
-                    await pg.tasks.updateDeadline($client.id, deadline);
+                    await pg.tasks.updateDeadline($session.currentTaskId, deadline);
                 go!: /Tasks/ShowTask
 
             state: WrongDeadline
-                event: noMatch
                 q: *
                 a: К сожалению, не удалось распознать дату в вашем ответе. Попробуйте ещё раз
                 go: /Tasks/UpdateTask/GetDeadline
@@ -248,19 +249,20 @@ theme: /Tasks
             scriptEs6:
                 var buttons = [];
                 _.each(await pg.statuses.getStatuses(), function(status) {
-                    buttons.push({text: status});
+                    buttons.push({text: status, transition: '/Tasks/UpdateTask/UpdateStatus/Confirm'});
                 });
                 $reactions.buttons(buttons);
             buttons:
                 "Вернуться к задаче" -> /Tasks/ShowTask
             
             state: Confirm
-                event: noMatch
-                q: *
-                scriptEs6:
-                    $session.task.status = $request.query;
-                    await pg.tasks.updateStatus($client.id, $session.task.status);
+                scriptEs6: await pg.tasks.updateStatus($session.currentTaskId, $request.query);
                 go!: /Tasks/ShowTask
+
+            state: InvalidAnswer
+                q: *
+                a: Используй только кнопки, пожалуйста
+                go!: /Tasks/UpdateTask/UpdateStatus
 
     state: DeleteTask
         a: Вы точно хотите удалить задачу?

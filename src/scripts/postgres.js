@@ -81,6 +81,10 @@ const userTasks = {
         return sql`INSERT INTO userTasks(user_id, task_id)
             VALUES (${userId}, ${taskId});`;
     },
+    async deleteTask(id) {
+        await userTasks.createTable();
+        return sql`DELETE FROM userTasks WHERE task_id = ${id};`;
+    }
 };
 
 const tasks = {
@@ -159,6 +163,7 @@ const tasks = {
     },
     async deleteTask(id) {
         await tasks.createTable();
+        await userTasks.deleteTask(id);
         return sql`DELETE FROM tasks WHERE id = ${id};`;
     }
 };

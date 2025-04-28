@@ -96,12 +96,8 @@ function deleteMessage(message_id) {
 }
 
 function generatePassword(len){
-    var password = "";
-    var symbols = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!№;%:?*()_+=";
-    for (var i = 0; i < len; i++){
-        password += symbols.charAt(Math.floor(Math.random() * symbols.length));     
-    }
-    return password;
+    len = len * (-1);
+    return Math.random().toString(36).slice(len);
 }
 
 function isTelegramChannel() {

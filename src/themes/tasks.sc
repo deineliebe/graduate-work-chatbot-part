@@ -74,7 +74,7 @@ theme: /Tasks
                 a: Вы уже заполняли заявку:
                     Название: {{$session.newTask.name}}
                     Описание: {{$session.newTask.description}}
-                    Дедлайн: {{$session.newTask.deadline}}
+                    Дедлайн: {{moment($session.task.deadline).locale("ru").format("Do MMMM h:mm")}}
                     Хотите продолжить заполнение?
             elseif: $session.newTask.description
                 a: Вы уже заполняли заявку:
@@ -127,7 +127,9 @@ theme: /Tasks
             state: Confirm
                 q: *
                 scriptEs6:
+                    log("!!!: " + toPrettyString(status));
                     $session.tasks = await pg.tasks.getTasksWithSpecificStatus($client.id, $request.query);
+                    log("!!!: " + toPrettyString($session.tasks));
                 if: _.isEmpty($session.tasks)
                     a: На текущий момент у вас нет задач с таким статусом
                     go!: /Tasks/GetTasks/NoTasks
@@ -204,7 +206,9 @@ theme: /Tasks
             
             state: Confirm
                 q: *
-                script: $session.task.name = $request.query;
+                scriptEs6:
+                    $session.task.name = $request.query;
+                    await pushgate.tasks.updateName($request.query);
                 go!: /Tasks/ShowTask
 
         state: UpdateDescription
@@ -213,7 +217,9 @@ theme: /Tasks
             
             state: Confirm
                 q: *
-                script: $session.task.description = $request.query;
+                scriptEs6:
+                    $session.task.description = $request.query;
+                    await pushgate.tasks.updateDescription($request.query);
                 go!: /Tasks/ShowTask
 
         state: UpdateDeadline
@@ -222,7 +228,9 @@ theme: /Tasks
             
             state: Confirm
                 q: * @duckling.date::date *
-                script: $session.task.deadline = moment($parseTree._date).add(3, "h").subtract(1, 'months');
+                scriptEs6:
+                    $session.task.deadline = moment($parseTree._date).add(3, "h").subtract(1, 'months');
+                    await pushgate.tasks.updateDeadline($request.query);
                 go!: /Tasks/ShowTask
 
             state: WrongDeadline
@@ -242,7 +250,9 @@ theme: /Tasks
             
             state: Confirm
                 q: *
-                script: $session.task.status = $request.query;
+                scriptEs6:
+                    $session.task.status = $request.query;
+                    await pushgate.tasks.updateName($request.query);
                 go!: /Tasks/ShowTask
 
     state: DeleteTask

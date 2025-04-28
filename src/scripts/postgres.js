@@ -119,13 +119,12 @@ const tasks = {
             WHERE user_id = ${userId}
             ORDER BY created_at DESC
             LIMIT 1;`.then(res => { return res.id; });
-        },
+    },
     async getUserTasksOrderedByDeadline(userId) {
         await tasks.createTable();
         await userTasks.createTable();
         return sql`SELECT user_id, id, name, description, deadline, created_at, status
-            FROM userTasks
-            LEFT JOIN tasks
+            FROM userTasks LEFT JOIN tasks
             ON userTasks.task_id = tasks.id
             WHERE user_id = ${userId} AND deadline >= CURRENT_DATE
             ORDER BY deadline ASC;`;
@@ -133,7 +132,8 @@ const tasks = {
     async getTasksWithSpecificStatus(userId, status) {
         await tasks.createTable();
         await userTasks.createTable();
-        return sql`SELECT * FROM userTasks LEFT JOIN tasks
+        return sql`SELECT user_id, id, name, description, deadline, created_at, status
+            FROM userTasks LEFT JOIN tasks
             ON userTasks.task_id = tasks.id
             WHERE user_id = ${userId} AND status = '${status}'
             ORDER BY created_at DESC;`;
@@ -144,6 +144,34 @@ const tasks = {
         return sql`SELECT * FROM tasks
             WHERE id = ${id};`.then(res => { return _.first(res); });
     },
+    async updateName(id, name) {
+        await tasks.createTable();
+        await userTasks.createTable();
+        return sql`UPDATE tasks 
+            SET name = '${name}'
+            WHERE id = ${id};`;
+    },
+    async updateDescription(id, description) {
+        await tasks.createTable();
+        await userTasks.createTable();
+        return sql`UPDATE tasks 
+            SET description = '${description}'
+            WHERE id = ${id};`;
+    },
+    async updateDeadline(id, deadline) {
+        await tasks.createTable();
+        await userTasks.createTable();
+        return sql`UPDATE tasks 
+            SET deadline = '${deadline}'
+            WHERE id = ${id};`;
+    },
+    async updateStatus(id, status) {
+        await tasks.createTable();
+        await userTasks.createTable();
+        return sql`UPDATE tasks 
+            SET status = '${status}'
+            WHERE id = ${id};`;
+    }
 };
 
 const statuses = {

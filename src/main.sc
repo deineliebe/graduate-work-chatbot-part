@@ -27,7 +27,7 @@ theme: /
                 if (testMode()) $.client.id = 0;
                 else {
                     $client.id = pg.users.getUser($client.chatId).id;
-                    log("!!! " + toPrettyString(await pg.users.getUser($client.chatId)));
+                    log("!!! " + toPrettyString($client.id)));
                 }
                 $client.tasks = [];
             a: Привет! Я - бот помощник для планирования задач

@@ -4,11 +4,10 @@ let sql;
 
 function initSQL() {
     if (sql) return;
-    const mode = $env.get("DB_MODE", "TEST");
-    const host = $env.get(`POSTGRES_HOST_${mode}`);
-    const database = $env.get(`DB_NAME_${mode}`);
-    const username = $secrets.get(`POSTGRES_USER_${mode}`);
-    const password = $secrets.get(`POSTGRES_PASSWORD_${mode}`);
+    const host = $env.get(`POSTGRES_HOST`);
+    const database = $env.get(`DB_NAME`);
+    const username = $secrets.get(`POSTGRES_USER`);
+    const password = $secrets.get(`POSTGRES_PASSWORD`);
     sql = postgres({
         host: host,
         port: 5432,

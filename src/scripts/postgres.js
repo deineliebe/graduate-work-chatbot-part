@@ -81,20 +81,6 @@ const userTasks = {
         return sql`INSERT INTO userTasks(user_id, task_id)
             VALUES (${userId}, ${taskId});`;
     },
-    async getTasks() {
-        await userTasks.createTable();
-        return sql`SELECT * FROM userTasks;`;
-    },
-    async getTasksWithSpecificStatus(status) {
-        await userTasks.createTable();
-        return sql`SELECT * FROM userTasks
-            WHERE status=${status};`;
-    },
-    async getTask(id) {
-        await userTasks.createTable();
-        return sql`SELECT * FROM userTasks
-            WHERE id = ${id};`.then(res => { return _.first(res); });
-    },
 };
 
 const tasks = {
@@ -146,14 +132,14 @@ const tasks = {
             WHERE user_id = ${userId} AND deadline >= CURRENT_DATE
             ORDER BY deadline ASC;`;
     },
-    async getTasksWithSpecificStatus(status) {
+    async getTasksWithSpecificStatus(userId, status) {
         await tasks.createTable();
         await userTasks.createTable();
         return sql`SELECT * FROM tasks
             FROM userTasks
             LEFT JOIN tasks
             ON userTasks.task_id = tasks.id
-            WHERE status=${status}
+            WHERE user_id = ${userId} AND status=${status}
             ORDER BY created_at DESC;`;
     },
     async getTask(id) {

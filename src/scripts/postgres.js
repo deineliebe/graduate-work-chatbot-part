@@ -132,7 +132,7 @@ const tasks = {
         return sql`SELECT user_id, id, name, description, deadline, created_at, status
             FROM userTasks LEFT JOIN tasks
             ON userTasks.task_id = tasks.id
-            WHERE user_id = ${userId} AND status = '${status}'
+            WHERE user_id = ${userId} AND status = ${status}
             ORDER BY created_at DESC;`;
     },
     async getTask(id) {

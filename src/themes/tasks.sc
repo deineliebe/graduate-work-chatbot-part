@@ -152,7 +152,7 @@ theme: /Tasks
             q: * @duckling.number::number *
             scriptEs6:
                 delete $session.buttonsPaginationMessage;
-                $session.task = await pg.tasks.getTask(number);
+                $session.task = await pg.tasks.getTask($parseTree._number);
             go!: /Tasks/ShowTask
         
         state: MoreBack

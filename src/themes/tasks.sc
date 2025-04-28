@@ -154,7 +154,6 @@ theme: /Tasks
             q: * @duckling.number::number *
             scriptEs6:
                 delete $session.buttonsPaginationMessage;
-                $session.task = await pg.tasks.getTask($parseTree._number);
             go!: /Tasks/ShowTask
         
         state: MoreBack
@@ -175,7 +174,8 @@ theme: /Tasks
                 $reactions.transition("/Tasks/Search");
 
     state: ShowTask
-        script:
+        scriptEs6:
+            $session.task = await pg.tasks.getTask($parseTree._number);
             $temp.body = "Название: " + $session.task.name + "\n";
             $temp.body += $session.task.description ? "Описание: " + $session.task.description + "\n" : "";
             $temp.body += $session.task.deadline ? "Дедлайн: " + moment($session.task.deadline).locale("ru").format("Do MMMM YY") + "\n" : "";
@@ -185,7 +185,7 @@ theme: /Tasks
         buttons:
             "Обновить" -> /Tasks/UpdateTask
             "Удалить" -> /Tasks/DeleteTask
-            "Вернуться к списку" -> /Tasks/Search
+            "Вернуться к списку" -> /Tasks/GetTasks
             "Вернуться в меню" -> /HowCanIHelpYou
         q: * {(обновить) [@Task]} * || toState = "/Tasks/UpdateTask"
         q: * {(удалить) [@Task]} * || toState = "/Tasks/DeleteTask"
@@ -209,8 +209,7 @@ theme: /Tasks
                 event: noMatch
                 q: *
                 scriptEs6:
-                    $session.task.name = $request.query;
-                    await pg.tasks.updateName($client.id, $session.task.name);
+                    await pg.tasks.updateName($client.id, $request.query);
                 go!: /Tasks/ShowTask
 
         state: UpdateDescription || modal = true
@@ -223,8 +222,7 @@ theme: /Tasks
                 event: noMatch
                 q: *
                 scriptEs6:
-                    $session.task.description = $request.query;
-                    await pg.tasks.updateDescription($client.id, $session.task.description);
+                    await pg.tasks.updateDescription($client.id, $request.query);
                 go!: /Tasks/ShowTask
 
         state: UpdateDeadline || modal = true
@@ -236,8 +234,8 @@ theme: /Tasks
             state: Confirm
                 q: * @duckling.date::date *
                 scriptEs6:
-                    $session.task.deadline = moment($parseTree._date).add(3, "h").subtract(1, 'months');
-                    await pg.tasks.updateDeadline($client.id, $session.task.deadline);
+                    const deadline = moment($parseTree._date).add(3, "h").subtract(1, 'months');
+                    await pg.tasks.updateDeadline($client.id, deadline);
                 go!: /Tasks/ShowTask
 
             state: WrongDeadline

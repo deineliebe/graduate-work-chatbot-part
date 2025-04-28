@@ -73,9 +73,9 @@ theme: /
                     state: Confirm
                         q: * @duckling.number::number *
                         if: Number($parseTree._number) == $session.code
-                            script:
-                                $session.password = changeEmail($client.id, $client.email, $injector.passwordLength);
-                                changeEmail($client.id, $client.email, $session.password);
+                            scriptEs6:
+                                var password = generatePassword($injector.passwordLength);
+                                pg.emailData.changeEmail($client.id, $client.email, password);
                             Email:
                                 destination = {{$client.email}}
                                 subject = Код для регистрации почты (Task Planner)

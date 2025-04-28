@@ -95,7 +95,7 @@ function deleteMessage(message_id) {
     });
 }
 
-function gen_password(len){
+function generatePassword(len){
     var password = "";
     var symbols = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!№;%:?*()_+=";
     for (var i = 0; i < len; i++){

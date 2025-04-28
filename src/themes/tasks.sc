@@ -12,12 +12,11 @@ theme: /Tasks
             go: /Tasks/CreateTask
 
         state: GetName
+            script: $session.newTask = $session.newTask || {};
             if: !_.isEmpty($session.newTask.description)
                 go!: /Tasks/CreateTask/GetDescription
             if: !$session.newTask || _.isEmpty($session.newTask.name)
-                script:
-                    $session.newTask = $session.newTask || {};
-                    $session.newTask.name = $session.newTask.name || $request.query;
+                script: $session.newTask.name = $session.newTask.name || $request.query;
                 a: Напишите описание для задачи
             else:
                 go!: /Tasks/CreateTask/GetDescription

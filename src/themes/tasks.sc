@@ -142,10 +142,6 @@ theme: /Tasks
 
     state: Search
         script:
-            log("!!!0: " + toPrettyString($session.tasks));
-            log("!!!1: " + toPrettyString(_.map($session.tasks, function(task) {
-                    return {text: task.name + " (" + task.id + ")"};
-                })));
             if ($session.buttonsPaginationMessage) deleteMessage($session.buttonsPaginationMessage);
             $session.buttonsPaginationMessage = sendMessage("Выберите задачу: введите её id или нажмите на соответствующую кнопку",
                 pagination(_.map($session.tasks, function(task) {
@@ -154,11 +150,9 @@ theme: /Tasks
         
         state: GetNumber
             q: * @duckling.number::number *
-            script:
+            scriptEs6:
                 delete $session.buttonsPaginationMessage;
-                $session.task = _.find($client.tasks, function(task) {
-                    return task.id == $parseTree._number
-                });
+                $session.task = await pg.tasks.getTask(number);
             go!: /Tasks/ShowTask
         
         state: MoreBack

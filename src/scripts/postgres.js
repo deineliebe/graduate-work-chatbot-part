@@ -108,7 +108,7 @@ const statuses = {
     },
     async getStatuses() {
         await users.createTable();
-        return sql`SELECT status FROM statuses;`;
+        return sql`SELECT status FROM statuses;`.then(res => { return _.pluck(res, 'status'); });
     },
 };
 

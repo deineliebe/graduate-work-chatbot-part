@@ -109,7 +109,7 @@ const tasks = {
             CONSTRAINT task_id PRIMARY KEY (name, username)
         );`;
     },
-    async addTask(name, deadline, createdAt, status) {
+    async addTask(name, description, deadline, createdAt, status) {
         await tasks.createTable();
         await userTasks.createTable();
         return sql`INSERT INTO tasks(name, description, deadline, created_at, status)
@@ -125,6 +125,17 @@ const tasks = {
             WHERE user_id = ${userId}
             ORDER BY created_at DESC;`;
     },
+    async getUserLastTaskId(userId) {
+        await tasks.createTable();
+        await userTasks.createTable();
+        return sql`SELECT id
+            FROM userTasks
+            LEFT JOIN tasks
+            ON userTasks.task_id = tasks.id
+            WHERE user_id = ${userId}
+            ORDER BY created_at DESC
+            LIMIT 1;`.then(res => { return res.id; });
+        },
     async getUserTasksOrderedByDeadline(userId) {
         await tasks.createTable();
         await userTasks.createTable();

@@ -12,7 +12,9 @@ theme: /Tasks
             go: /Tasks/CreateTask
 
         state: GetName
-            if: !$session.newTask || _.isEmpty($session.newTask.description)
+            if: !_.isEmpty($session.newTask.description)
+                go!: /Tasks/CreateTask/GetDescription
+            if: !$session.newTask || _.isEmpty($session.newTask.name)
                 script:
                     $session.newTask = $session.newTask || {};
                     $session.newTask.name = $session.newTask.name || $request.query;
@@ -24,7 +26,10 @@ theme: /Tasks
             q: * || toState="/Tasks/CreateTask/GetDescription"
 
         state: GetDescription
-            script: $session.newTask.description = $request.query;
+            if: !_.isEmpty($session.newTask.deadline)
+                go!: /Tasks/CreateTask/GetDeadline
+            if: _.isEmpty($session.newTask.description)
+                script: $session.newTask.description = $request.query;
             a: Укажите дедлайн выполнения задачи
             buttons:
                 "Нет дедлайна" -> /Tasks/CreateTask/GetDeadline
@@ -33,9 +38,8 @@ theme: /Tasks
             q: * @duckling.date::date * || toState="/Tasks/CreateTask/GetDeadline"
 
         state: GetDeadline
-            script:
-                $session.newTask.description = $request.query;
-                if ($parseTree._date) $session.newTask.deadline = moment($parseTree._date).add(3, "h").subtract(1, 'months');
+            if: _.isEmpty($session.newTask.deadline) && $parseTree._date
+                script: $session.newTask.deadline = moment($parseTree._date).add(3, "h").subtract(1, 'months');
             a: Укажите статус
             scriptEs6:
                 var buttons = [];
@@ -50,10 +54,14 @@ theme: /Tasks
             scriptEs6:
                 $session.newTask.status = $request.query;
                 $session.newTask.createdAt = moment().add(3, "h");
-                log("!!! " + toPrettyString($parseTree));
-                log("!!! " + toPrettyString($session.newTask));
-                $session.newTask.id = "test";
-            a: Задача создана, её ID: {{$session.newTask.id}}
+                await pg.tasks.addTask($session.newTask.name,
+                    $session.newTask.description,
+                    $session.newTask.deadline,
+                    $session.newTask.createdAt,
+                    $session.newTask.status);
+                $temp.taskId = await pg.tasks.getUserLastTaskId(userId);
+                await pg.tasks.userTasks($client.id, $temp.taskId);
+            a: Задача создана, её ID: {{$temp.taskId}}
             script: delete $session.newTask;
             go!: /HowCanIHelpYou
 
@@ -62,7 +70,13 @@ theme: /Tasks
             go!: /Tasks/CreateTask/GetName
 
         state: ClarifyTask
-            if: $session.newTask.description
+            if: $session.newTask.deadline
+                a: Вы уже заполняли заявку:
+                    Название: {{$session.newTask.name}}
+                    Описание: {{$session.newTask.description}}
+                    Дедлайн: {{$session.newTask.deadline}}
+                    Хотите продолжить заполнение?
+            elseif: $session.newTask.description
                 a: Вы уже заполняли заявку:
                     Название: {{$session.newTask.name}}
                     Описание: {{$session.newTask.description}}

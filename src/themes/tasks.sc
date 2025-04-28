@@ -33,14 +33,26 @@ theme: /Tasks
             q: * @duckling.date::date * || toState="/Tasks/CreateTask/GetDeadline"
 
         state: GetDeadline
+            script:
+                $session.newTask.description = $request.query;
+                if ($parseTree._date) $session.newTask.deadline = moment($parseTree._date).add(3, "h").subtract(1, 'months');
+            a: Укажите статус
+            scriptEs6:
+                var buttons = [];
+                _.each(await pg.statuses.getStatuses(), function(status) {
+                    buttons.push({text: status});
+                });
+                $reactions.buttons(buttons);
+            q: * || toState="/Tasks/CreateTask/CreateTask"
+
+        state: CreateTask
             a: Отлично! Приступаю к созданию задачи
             scriptEs6:
-                if ($parseTree._date) $session.newTask.deadline = moment($parseTree._date).add(3, "h").subtract(1, 'months');
-                $session.newTask.status = _.first(await pg.statuses.getStatuses()) || "Бэклог";
+                $session.newTask.status = $request.query;
                 $session.newTask.createdAt = moment().add(3, "h");
                 log("!!! " + toPrettyString($parseTree));
                 log("!!! " + toPrettyString($session.newTask));
-                $client.tasks.push($session.newTask);
+                $session.newTask.id = "test";
             a: Задача создана, её ID: {{$session.newTask.id}}
             script: delete $session.newTask;
             go!: /HowCanIHelpYou

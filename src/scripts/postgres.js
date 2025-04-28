@@ -31,10 +31,10 @@ const users = {
     },
     async addUser(channelUserId) {
         await users.createTable();
-        return sql`INSERT INTO users(channel_user_id)
+        return sql`INSERT INTO users(channelid)
             VALUES (${channelUserId})
             ON CONFLICT (channelUserId) DO UPDATE
-            SET channel_user_id = EXCLUDED.channel_user_id;`;
+            SET channelid = EXCLUDED.channelid;`;
     },
     async getUsers() {
         await users.createTable();

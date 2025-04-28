@@ -105,8 +105,7 @@ const tasks = {
         await tasks.createTable();
         await userTasks.createTable();
         return sql`SELECT user_id, id, name, description, deadline, created_at, status
-            FROM userTasks
-            LEFT JOIN tasks
+            FROM userTasks LEFT JOIN tasks
             ON userTasks.task_id = tasks.id
             WHERE user_id = ${userId}
             ORDER BY created_at DESC;`;
@@ -115,8 +114,7 @@ const tasks = {
         await tasks.createTable();
         await userTasks.createTable();
         return sql`SELECT id
-            FROM userTasks
-            LEFT JOIN tasks
+            FROM userTasks LEFT JOIN tasks
             ON userTasks.task_id = tasks.id
             WHERE user_id = ${userId}
             ORDER BY created_at DESC
@@ -135,8 +133,7 @@ const tasks = {
     async getTasksWithSpecificStatus(userId, status) {
         await tasks.createTable();
         await userTasks.createTable();
-        return sql`SELECT * FROM userTasks
-            LEFT JOIN tasks
+        return sql`SELECT * FROM userTasks LEFT JOIN tasks
             ON userTasks.task_id = tasks.id
             WHERE user_id = ${userId} AND status = '${status}'
             ORDER BY created_at DESC;`;
@@ -158,13 +155,15 @@ const statuses = {
     },
     async getStatuses() {
         await statuses.createTable();
-        return sql`SELECT status FROM statuses;`.then(res => { return _.pluck(res, 'status'); });
+        return sql`SELECT status FROM statuses;`
+        .then(res => { return _.pluck(res, 'status'); });
     },
 };
 
 export default {
     users,
     emailData,
+    userTasks,
     tasks,
     statuses
 };

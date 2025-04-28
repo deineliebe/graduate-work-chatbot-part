@@ -142,6 +142,7 @@ theme: /Tasks
 
     state: Search
         script:
+            log("!!!: " + toPrettyString($session.tasks));
             if ($session.buttonsPaginationMessage) deleteMessage($session.buttonsPaginationMessage);
             $session.buttonsPaginationMessage = sendMessage("Выберите задачу: введите её id или нажмите на соответствующую кнопку",
                 pagination(_.map($session.tasks, function(task) {

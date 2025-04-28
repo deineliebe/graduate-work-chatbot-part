@@ -68,7 +68,7 @@ theme: /
                     "Вернуться в меню" -> /HowCanIHelpYou
 
                 state: SendEmail
-                    a: Спасибо! На адрес {{$client.email}}  отправлен код. Введи его
+                    a: Спасибо! На адрес {{$client.email}} отправлен код. Введи его
 
                     state: Confirm
                         q: * @duckling.number::number *

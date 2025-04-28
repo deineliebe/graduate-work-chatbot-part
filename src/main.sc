@@ -54,7 +54,9 @@ theme: /
 
             state: GetEmail
                 q: * @duckling.email * || fromState = "/Settings"
-                script: $session.code = Math.floor(Math.random() * $injector.emailCodeLimit);
+                script: 
+                    $client.email = $parseTree.value;
+                    $session.code = Math.floor(Math.random() * $injector.emailCodeLimit);
                 a: Спасибо! На адрес {{$client.email}}  отправлен код. Введи его
                 Email:
                     destination = {{$client.email}}

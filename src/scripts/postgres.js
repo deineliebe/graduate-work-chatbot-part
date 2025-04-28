@@ -147,19 +147,19 @@ const tasks = {
     },
     async updateName(id, name) {
         await tasks.createTable();
-        return sql`UPDATE tasks SET name = '${name}' WHERE id = ${id};`;
+        return sql`UPDATE tasks SET name = ${name} WHERE id = ${id};`;
     },
     async updateDescription(id, description) {
         await tasks.createTable();
-        return sql`UPDATE tasks SET description = '${description}' WHERE id = ${id};`;
+        return sql`UPDATE tasks SET description = ${description} WHERE id = ${id};`;
     },
     async updateDeadline(id, deadline) {
         await tasks.createTable();
-        return sql`UPDATE tasks SET deadline = '${deadline}' WHERE id = ${id};`;
+        return sql`UPDATE tasks SET deadline = ${deadline} WHERE id = ${id};`;
     },
     async updateStatus(id, status) {
         await tasks.createTable();
-        return sql`UPDATE tasks SET status = '${status}' WHERE id = ${id};`;
+        return sql`UPDATE tasks SET status = ${status} WHERE id = ${id};`;
     },
     async deleteTask(id) {
         await tasks.createTable();

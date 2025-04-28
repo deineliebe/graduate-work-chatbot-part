@@ -28,7 +28,7 @@ theme: /
                 else {
                     $client.id = (await pg.users.getUser($client.chatId)).id;
                 }
-            a: Привет! Я - бот помощник для планирования задач
+            a: Привет! Я - бот-помощник для планирования задач
         go!: /HowCanIHelpYou
 
     state: HowCanIHelpYou

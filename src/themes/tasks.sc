@@ -38,7 +38,6 @@ theme: /Tasks
                 if ($parseTree._date) $session.newTask.deadline = moment($parseTree._date).add(3, "h").subtract(1, 'months');
                 $session.newTask.status = _.first(await pg.statuses.getStatuses()) || "Бэклог";
                 $session.newTask.createdAt = moment().add(3, "h");
-                $session.newTask.id = $client.tasks.length;
                 log("!!! " + toPrettyString($parseTree));
                 log("!!! " + toPrettyString($session.newTask));
                 $client.tasks.push($session.newTask);

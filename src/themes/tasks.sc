@@ -271,10 +271,7 @@ theme: /Tasks
 
         state: Confirm
             q: подтверждаю
-            script:
-                $client.tasks = _.filter($client.tasks, function(task) {
-                    return $session.task.id != task.id;
-                });
+            scriptEs6: await pg.tasks.deleteTask($session.task.id);
             a: Хорошо! Задача {{$session.task.id}} удалена
             go!: /Tasks/GetTasks
 

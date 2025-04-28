@@ -73,7 +73,7 @@ theme: /Tasks
                 a: Вы уже заполняли заявку:
                     Название: {{$session.newTask.name}}
                     Описание: {{$session.newTask.description}}
-                    Дедлайн: {{_.isEmpty($session.newTask.deadline) ?  "-" : moment($session.newTask.deadline).locale("ru").format("Do MMMM h:mm")}}
+                    Дедлайн: {{_.isEmpty($session.newTask.deadline) ?  "-" : moment($session.newTask.deadline).locale("ru").format("Do MMMM YY")}}
                     Хотите продолжить заполнение?
             elseif: $session.newTask.description
                 a: Вы уже заполняли заявку:
@@ -178,9 +178,9 @@ theme: /Tasks
         script:
             $temp.body = "Название: " + $session.task.name + "\n";
             $temp.body += $session.task.description ? "Описание: " + $session.task.description + "\n" : "";
-            $temp.body += $session.task.deadline ? "Дедлайн: " + moment($session.task.deadline).locale("ru").format("Do MMMM") + "\n" : "";
+            $temp.body += $session.task.deadline ? "Дедлайн: " + moment($session.task.deadline).locale("ru").format("Do MMMM YY") + "\n" : "";
             $temp.body += "Статус: " + $session.task.status + "\n";
-            $temp.body += "\n(Создано: " + moment($session.task.createdAt).locale("ru").format("Do MMMM h:mm") + ")";
+            $temp.body += "\n(Создано: " + moment($session.task.createdAt).locale("ru").format("Do MMMM YY h:mm") + ")";
         a: {{$temp.body}}
         buttons:
             "Обновить" -> /Tasks/UpdateTask

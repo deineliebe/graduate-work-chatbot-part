@@ -199,9 +199,11 @@ theme: /Tasks
             "Статус"
             "Вернуться" -> /Tasks/ShowTask
 
-        state: UpdateName
+        state: UpdateName || modal = true
             q: * @Name *
             a: Введите новое название задачи
+            buttons:
+                "Вернуться к задаче" -> /Tasks/ShowTask
             
             state: Confirm
                 event: noMatch
@@ -211,9 +213,11 @@ theme: /Tasks
                     await pg.tasks.updateName($client.id, $session.task.name);
                 go!: /Tasks/ShowTask
 
-        state: UpdateDescription
+        state: UpdateDescription || modal = true
             q: * @Description *
             a: Введите новое описание задачи
+            buttons:
+                "Вернуться к задаче" -> /Tasks/ShowTask
             
             state: Confirm
                 event: noMatch
@@ -223,9 +227,11 @@ theme: /Tasks
                     await pg.tasks.updateDescription($client.id, $session.task.description);
                 go!: /Tasks/ShowTask
 
-        state: UpdateDeadline
+        state: UpdateDeadline || modal = true
             q: * @Deadline *
             a: Введите новый дедлайн
+            buttons:
+                "Вернуться к задаче" -> /Tasks/ShowTask
             
             state: Confirm
                 q: * @duckling.date::date *
@@ -240,7 +246,7 @@ theme: /Tasks
                 a: К сожалению, не удалось распознать дату в вашем ответе. Попробуйте ещё раз
                 go: /Tasks/UpdateTask/GetDeadline
 
-        state: UpdateStatus
+        state: UpdateStatus || modal = true
             q: * @Status *
             a: Выберите статус
             scriptEs6:
@@ -249,6 +255,8 @@ theme: /Tasks
                     buttons.push({text: status});
                 });
                 $reactions.buttons(buttons);
+            buttons:
+                "Вернуться к задаче" -> /Tasks/ShowTask
             
             state: Confirm
                 event: noMatch

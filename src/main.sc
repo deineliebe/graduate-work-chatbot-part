@@ -26,7 +26,7 @@ theme: /
                 await pg.users.addUser($request.data.chatId);
                 if (testMode()) $.client.id = 0;
                 else {
-                    $client.id = pg.users.getUser($client.chatId).id;
+                    $client.id = (await pg.users.getUser($client.chatId)).id;
                     log("!!! " + toPrettyString($client.id));
                 }
                 $client.tasks = [];

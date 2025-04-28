@@ -23,9 +23,12 @@ theme: /
         else:
             scriptEs6:
                 $client.chatId = $request.data.chatId;
-                pg.users.addUser($request.data.chatId);
+                log("!!! " + toPrettyString(await pg.users.addUser($request.data.chatId)));
                 if (testMode()) $.client.id = 0;
-                else $.client.id = pg.users.getUser($client.chatId).id;
+                else {
+                    $client.id = pg.users.getUser($client.chatId).id;
+                    log("!!! " + toPrettyString(pg.users.addUser(await pg.users.getUser($client.chatId))));
+                }
                 $client.tasks = [];
             a: Привет! Я - бот помощник для планирования задач
         go!: /HowCanIHelpYou

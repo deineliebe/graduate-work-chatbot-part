@@ -135,11 +135,10 @@ const tasks = {
     async getTasksWithSpecificStatus(userId, status) {
         await tasks.createTable();
         await userTasks.createTable();
-        return sql`SELECT * FROM tasks
-            FROM userTasks
+        return sql`SELECT * FROM userTasks
             LEFT JOIN tasks
             ON userTasks.task_id = tasks.id
-            WHERE user_id = ${userId} AND status=${status}
+            WHERE user_id = ${userId} AND status = '${status}'
             ORDER BY created_at DESC;`;
     },
     async getTask(id) {

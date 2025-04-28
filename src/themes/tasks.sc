@@ -144,7 +144,7 @@ theme: /Tasks
         script:
             if ($session.buttonsPaginationMessage) deleteMessage($session.buttonsPaginationMessage);
             $session.buttonsPaginationMessage = sendMessage("Выберите задачу: введите её id или нажмите на соответствующую кнопку",
-                pagination(_.map($client.tasks, function(task) {
+                pagination(_.map($session.tasks, function(task) {
                     return {text: task.name + " (" + task.id + ")"};
                 }), $session.paginatorCurPos, $injector.tasksOnPage));
         

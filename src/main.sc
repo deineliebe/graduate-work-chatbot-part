@@ -23,8 +23,9 @@ theme: /
         else:
             scriptEs6:
                 $client.chatId = $request.data.chatId;
+                pg.users.addUser($request.data.chatId);
                 if (testMode()) $.client.id = 0;
-                else $.client.id = 0;
+                else $.client.id = pg.users.getUser($client.chatId).id;
                 $client.tasks = [];
             a: Привет! Я - бот помощник для планирования задач
         go!: /HowCanIHelpYou

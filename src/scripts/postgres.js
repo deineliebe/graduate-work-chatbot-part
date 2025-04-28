@@ -25,28 +25,26 @@ function initSQL() {
 const users = {
     async createTable() {
         initSQL();
-        return sql`CREATE TABLE IF NOT EXISTS users(
-            username VARCHAR(50) PRIMARY KEY,
-            channel_user_id VARCHAR(100),
-            email VARCHAR(100),
-            password VARCHAR(100),
+        return sql`CREATE TABLE users (
+            id SERIAL PRIMARY KEY,
+            channelid VARCHAR(25) UNIQUE
         );`;
     },
-    async addUser(username, channelUserId) {
+    async addUser(channelUserId) {
         await users.createTable();
-        return sql`INSERT INTO users(username, channel_user_id)
-            VALUES (${username}, ${channelUserId})
-            ON CONFLICT (username) DO UPDATE
+        return sql`INSERT INTO users(channel_user_id)
+            VALUES (${channelUserId})
+            ON CONFLICT (channelUserId) DO UPDATE
             SET channel_user_id = EXCLUDED.channel_user_id;`;
     },
     async getUsers() {
         await users.createTable();
         return sql`SELECT * FROM users;`;
     },
-    async getUser(username) {
+    async getUser(channelid) {
         await users.createTable();
         return sql`SELECT * FROM users
-            WHERE username = ${username};`.then(res => { return _.first(res); });;
+            WHERE channelid = ${channelid};`.then(res => { return _.first(res); });;
     },
 };
 

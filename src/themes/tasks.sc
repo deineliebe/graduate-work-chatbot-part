@@ -69,13 +69,13 @@ theme: /Tasks
             go!: /Tasks/CreateTask/GetName
 
         state: ClarifyTask
-            if: $session.newTask?.deadline
+            if: $session.newTask.deadline
                 a: Вы уже заполняли заявку:
                     Название: {{$session.newTask.name}}
                     Описание: {{$session.newTask.description}}
-                    Дедлайн: {{_.isEmpty($session.task.deadline) ? moment($session.task.deadline).locale("ru").format("Do MMMM h:mm") : "-"}}
+                    Дедлайн: {{$session.task.deadline ? moment($session.task.deadline).locale("ru").format("Do MMMM h:mm") : "-"}}
                     Хотите продолжить заполнение?
-            elseif: $session.newTask?.description
+            elseif: $session.newTask.description
                 a: Вы уже заполняли заявку:
                     Название: {{$session.newTask.name}}
                     Описание: {{$session.newTask.description}}

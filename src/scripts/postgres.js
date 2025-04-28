@@ -118,7 +118,7 @@ const tasks = {
             ON userTasks.task_id = tasks.id
             WHERE user_id = ${userId}
             ORDER BY created_at DESC
-            LIMIT 1;`.then(res => { return res.id; });
+            LIMIT 1;`.then(res => { return _.first(res); });
     },
     async getUserTasksOrderedByDeadline(userId) {
         await tasks.createTable();

@@ -148,7 +148,7 @@ const tasks = {
         await tasks.createTable();
         await userTasks.createTable();
         return sql`UPDATE tasks 
-            SET name = '${name}'
+            SET name = ${name}
             WHERE id = ${id};`;
     },
     async updateDescription(id, description) {

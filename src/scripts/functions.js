@@ -73,7 +73,7 @@ function sendMessage(text, _buttons, _removeKeyboard) {
         };
         if (_buttons) body.reply_markup.keyboard = [_buttons];
         if (_removeKeyboard) body.reply_markup.remove_keyboard = true;
-        var result = $http.post($.injector.baseTelegramUrl + "bot7227412761:AAGsN67h04tmFnuAiyBCO6MLWyipUKxn3-k/sendMessage", {
+        var result = $http.post($.injector.baseTelegramUrl + "bot" + $env.get("TELEGRAM_TOKEN") + "/sendMessage", {
             body: body
         });
         return result && result.data && result.data.result && result.data.result.message_id;

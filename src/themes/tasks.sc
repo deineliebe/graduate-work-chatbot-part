@@ -207,9 +207,10 @@ theme: /Tasks
             state: Confirm
                 event: noMatch
                 q: *
-                scriptEs6:
+                script:
                     $session.task.name = $request.query;
-                    await pg.tasks.updateName($client.id, $request.query);
+                    log("!!!: " + $session.task.name);
+                scriptEs6: await pg.tasks.updateName($client.id, $session.task.name);
                 go!: /Tasks/ShowTask
 
         state: UpdateDescription

@@ -32,13 +32,13 @@ theme: /
         go!: /HowCanIHelpYou
 
     state: HowCanIHelpYou
+        q!: $regex</menu>
         q!: {* (меню*/~навигация/список (~вариант/~опция)/~выбор)}
         a: Чем я могу тебе помочь?
         buttons:
             "Создай задачу" -> /Tasks/CreateTask
             "Покажи задачи" -> /Tasks/GetTasks
             "Настройки" -> /Settings
-            "Контакты" -> /Contacts
 
     state: Settings
         q!: [~показать/~поменять] (~настройки/~параметр/конфиг*)
@@ -119,8 +119,8 @@ theme: /
         q!: $regex</contacts>
         a: Привет!
         
-            Это - мой работа для моего диплома и в дополнение - пет-проект
-            С этим чат-ботом связан сайт: app.smalltaskplanner.ru
+            Эта работа - мой диплом и pet-проект
+            С этим чат-ботом связан сайт: http://app.smalltaskplanner.ru
             Репозиторий (для других кодеров): https://github.com/deineliebe/graduate-work-chatbot-part
 
             Удачи всем owo

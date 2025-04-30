@@ -109,7 +109,7 @@ const tasks = {
         await tasks.createTable();
         await userTasks.createTable();
         return sql`SELECT id, name, description, deadline, created_at, status
-            FROM user_tasks FULL JOIN tasks
+            FROM user_tasks INNER JOIN tasks
             ON user_tasks.task_id = tasks.id
             WHERE user_id = ${userId}
             ORDER BY created_at DESC;`;
@@ -125,7 +125,7 @@ const tasks = {
         await tasks.createTable();
         await userTasks.createTable();
         return sql`SELECT id, name, description, deadline, created_at, status
-            FROM user_tasks FULL JOIN tasks
+            FROM user_tasks INNER JOIN tasks
             ON user_tasks.task_id = tasks.id
             WHERE user_id = ${userId} AND deadline >= CURRENT_DATE
             ORDER BY deadline ASC;`;
@@ -134,7 +134,7 @@ const tasks = {
         await tasks.createTable();
         await userTasks.createTable();
         return sql`SELECT id, name, description, deadline, created_at, status
-            FROM user_tasks FULL JOIN tasks
+            FROM user_tasks INNER JOIN tasks
             ON user_tasks.task_id = tasks.id
             WHERE user_id = ${userId} AND status = ${status}
             ORDER BY created_at DESC;`;

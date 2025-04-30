@@ -50,7 +50,7 @@ const users = {
 const emailData = {
     async createTable() {
         initSQL();
-        return sql`CREATE TABLE IF NOT EXISTS authorizationData (
+        return sql`CREATE TABLE IF NOT EXISTS authorization_data (
             id INT NOT NULL UNIQUE,
             email VARCHAR(256) NOT NULL UNIQUE PRIMARY KEY,
             password VARCHAR(30) NOT NULL,
@@ -59,7 +59,7 @@ const emailData = {
     },
     async changeEmail(id, email, password) {
         await users.createTable();
-        return sql`INSERT INTO authorizationData(id, email, password)
+        return sql`INSERT INTO authorization_data(id, email, password)
             VALUES (${id}, ${email}, ${password})
             ON CONFLICT (id) DO UPDATE
             SET email = EXCLUDED.email;`;
@@ -69,7 +69,7 @@ const emailData = {
 const userTasks = {
     async createTable() {
         initSQL();
-        return sql`CREATE TABLE IF NOT EXISTS userTasks (
+        return sql`CREATE TABLE IF NOT EXISTS user_tasks (
             user_id INT NOT NULL,
             task_id INT NOT NULL,
             FOREIGN KEY (user_id) REFERENCES users (id),
@@ -78,12 +78,12 @@ const userTasks = {
     },
     async addTaskToAUser(userId, taskId) {
         await userTasks.createTable();
-        return sql`INSERT INTO userTasks(user_id, task_id)
+        return sql`INSERT INTO user_tasks(user_id, task_id)
             VALUES (${userId}, ${taskId});`;
     },
     async deleteTask(id) {
         await userTasks.createTable();
-        return sql`DELETE FROM userTasks WHERE task_id = ${id};`;
+        return sql`DELETE FROM user_tasks WHERE task_id = ${id};`;
     }
 };
 
@@ -109,8 +109,8 @@ const tasks = {
         await tasks.createTable();
         await userTasks.createTable();
         return sql`SELECT user_id, id, name, description, deadline, created_at, status
-            FROM userTasks LEFT JOIN tasks
-            ON userTasks.task_id = tasks.id
+            FROM user_tasks LEFT JOIN tasks
+            ON user_tasks.task_id = tasks.id
             WHERE user_id = ${userId}
             ORDER BY created_at DESC;`;
     },
@@ -125,8 +125,8 @@ const tasks = {
         await tasks.createTable();
         await userTasks.createTable();
         return sql`SELECT user_id, id, name, description, deadline, created_at, status
-            FROM userTasks LEFT JOIN tasks
-            ON userTasks.task_id = tasks.id
+            FROM user_tasks LEFT JOIN tasks
+            ON user_tasks.task_id = tasks.id
             WHERE user_id = ${userId} AND deadline >= CURRENT_DATE
             ORDER BY deadline ASC;`;
     },
@@ -134,8 +134,8 @@ const tasks = {
         await tasks.createTable();
         await userTasks.createTable();
         return sql`SELECT user_id, id, name, description, deadline, created_at, status
-            FROM userTasks LEFT JOIN tasks
-            ON userTasks.task_id = tasks.id
+            FROM user_tasks LEFT JOIN tasks
+            ON user_tasks.task_id = tasks.id
             WHERE user_id = ${userId} AND status = ${status}
             ORDER BY created_at DESC;`;
     },
@@ -163,14 +163,14 @@ const tasks = {
     },
     async deleteTask(id) {
         await tasks.createTable();
-        await userTasks.deleteTask(id);
+        await user_tasks.deleteTask(id);
         return sql`DELETE FROM tasks WHERE id = ${id};`;
     },
     async getStatuses(id) {
         await tasks.createTable();
         return sql`SELECT status
-            FROM userTasks LEFT JOIN tasks
-            ON userTasks.task_id = tasks.id
+            FROM user_tasks LEFT JOIN tasks
+            ON user_tasks.task_id = tasks.id
             WHERE user_id = ${id}
             GROUP BY status;`
             .then(res => { return _.pluck(res, 'status'); });

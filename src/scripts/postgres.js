@@ -108,7 +108,7 @@ const tasks = {
     async getUserTasksOrderedByCreatedDate(userId) {
         await tasks.createTable();
         await userTasks.createTable();
-        return sql`SELECT id, name, description, deadline, created_at, status
+        return sql`SELECT task_id AS id, name, description, deadline, created_at, status
             FROM user_tasks INNER JOIN tasks
             ON user_tasks.task_id = tasks.id
             WHERE user_id = ${userId}
@@ -124,7 +124,7 @@ const tasks = {
     async getUserTasksOrderedByDeadline(userId) {
         await tasks.createTable();
         await userTasks.createTable();
-        return sql`SELECT id, name, description, deadline, created_at, status
+        return sql`SELECT task_id AS id, name, description, deadline, created_at, status
             FROM user_tasks INNER JOIN tasks
             ON user_tasks.task_id = tasks.id
             WHERE user_id = ${userId} AND deadline >= CURRENT_DATE
@@ -133,7 +133,7 @@ const tasks = {
     async getTasksWithSpecificStatus(userId, status) {
         await tasks.createTable();
         await userTasks.createTable();
-        return sql`SELECT id, name, description, deadline, created_at, status
+        return sql`SELECT task_id AS id, name, description, deadline, created_at, status
             FROM user_tasks INNER JOIN tasks
             ON user_tasks.task_id = tasks.id
             WHERE user_id = ${userId} AND status = ${status}

@@ -9,3 +9,9 @@ bind("onScriptError", function() {
 bind("onDialogError", function() {
     $reactions.transition("/Error/ScriptAndDialogError");
 });
+
+bind("preMatch", function($context) {
+    if (!$context.client.isAuthorized) {
+        $context.temp.targetState = "/Start";
+    }
+});

@@ -15,21 +15,28 @@ require: patterns.sc
 
 
 theme: /
-
     state: Start
         q!: $regex</start>
         if: $client.isAuthorized
-            a: Привет! Рада видеть тебя, {{$client.username}}!
+            a: Привет! Рада видеть тебя!
+            go!: /HowCanIHelpYou
         else:
             scriptEs6:
-                $client.chatId = $request.data.chatId;
-                await pg.users.addUser($request.data.chatId);
-                if (testMode()) $.client.id = 0;
-                else {
-                    $client.id = (await pg.users.getUser($client.chatId)).id;
+                try {
+                    $client.chatId = $request.data.chatId;
+                    await pg.users.addUser($request.data.chatId);
+                    if (testMode()) $.client.id = 0;
+                    else $client.id = (await pg.users.getUser($client.chatId)).id;
+                    $client.isAuthorized = true;
+                } catch(err) {
+                    $temp.err = true;
                 }
-            a: Привет! Я - бот-помощник для планирования задач
-        go!: /HowCanIHelpYou
+            if: $temp.err
+                a: Возникли проблемы при подключении к серверу
+                    Отправь сообщение с текстом "/start" через несколько минут
+            else:
+                a: Привет! Я - бот-помощник для планирования задач
+                go!: /HowCanIHelpYou
 
     state: HowCanIHelpYou
         q!: $regex</menu>
@@ -75,13 +82,20 @@ theme: /
                         if: Number($parseTree._number) == $session.code
                             scriptEs6:
                                 $temp.password = generatePassword($injector.passwordLength);
-                                await pg.emailData.changeEmail($client.id, $client.email, $temp.password);
-                            Email:
-                                destination = {{$client.email}}
-                                subject = Код для регистрации почты (Task Planner)
-                                text = Мы привязали ваш адрес! Пароль: {{$temp.password}}
-                                okState = /Settings/ChangeEmail/GetEmail/SendEmail/SuccessMessage
-                                errorState = /Settings/ChangeEmail/GetEmail/Error
+                                try {
+                                    await pg.emailData.changeEmail($client.id, $client.email, $temp.password);
+                                } catch(err) {
+                                    $temp.err = true;
+                                }
+                            if: $temp.err
+                                go!: /Settings/ChangeEmail/GetEmail/Error
+                            else:
+                                Email:
+                                    destination = {{$client.email}}
+                                    subject = Код для регистрации почты (Task Planner)
+                                    text = Мы привязали ваш адрес! Пароль: {{$temp.password}}
+                                    okState = /Settings/ChangeEmail/GetEmail/SendEmail/SuccessMessage
+                                    errorState = /Settings/ChangeEmail/GetEmail/Error
                         else:
                             a: К сожалению, код некорректный. Попробуете ещё раз?
                             buttons:
@@ -99,7 +113,7 @@ theme: /
                             "Вернуться в меню" -> /HowCanIHelpYou
 
                 state: Error
-                    a: К сожалению, произошла ошибка. Попробуйте привязать email через сайт
+                    a: Произошла ошибка. Попробуйте привязать адрес через несколько минут
                     go!: /HowCanIHelpYou
 
             state: CatchAll

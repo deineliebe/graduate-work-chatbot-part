@@ -42,7 +42,7 @@ theme: /Tasks
             a: Укажите статус
             scriptEs6:
                 var buttons = [];
-                _.each(await pg.statuses.getStatuses(), function(status) {
+                _.each($injector.statuses, function(status) {
                     buttons.push({text: status, transition: "/Tasks/CreateTask/CreateTask"});
                 });
                 $reactions.buttons(buttons);
@@ -252,7 +252,7 @@ theme: /Tasks
             a: Выберите статус
             scriptEs6:
                 var buttons = [];
-                _.each(await pg.statuses.getStatuses(), function(status) {
+                _.each($injector.statuses, function(status) {
                     buttons.push({text: status, transition: '/Tasks/UpdateTask/UpdateStatus/Confirm'});
                 });
                 $reactions.buttons(buttons);

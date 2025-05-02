@@ -162,8 +162,13 @@ const tasks = {
     },
     async deleteTask(id) {
         await tasks.createTable();
-        await user_tasks.deleteTask(id);
-        return sql`DELETE FROM tasks WHERE id = ${id};`;
+        return sql`WITH deleted_parent AS (
+            DELETE FROM tasks
+            WHERE id = ${id};
+            RETURNING id
+            )
+            DELETE FROM user_tasks
+            WHERE task_id IN (SELECT id FROM deleted_parent);`;
     },
     async getStatuses(id) {
         await tasks.createTable();

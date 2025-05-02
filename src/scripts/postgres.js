@@ -80,10 +80,6 @@ const userTasks = {
         await userTasks.createTable();
         return sql`INSERT INTO user_tasks(user_id, task_id)
             VALUES (${userId}, ${taskId});`;
-    },
-    async deleteTask(id) {
-        await userTasks.createTable();
-        return sql`DELETE FROM user_tasks WHERE task_id = ${id};`;
     }
 };
 
@@ -163,9 +159,9 @@ const tasks = {
     async deleteTask(id) {
         await tasks.createTable();
         return sql`WITH deleted_parent AS (
-            DELETE FROM tasks
-            WHERE id = ${id};
-            RETURNING id
+                DELETE FROM tasks
+                WHERE id = ${id}
+                RETURNING id
             )
             DELETE FROM user_tasks
             WHERE task_id IN (SELECT id FROM deleted_parent);`;
